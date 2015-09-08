@@ -4,10 +4,10 @@ NewDB copyright (C) 2014 Joseph Durel [ jadematrix.art@gmail.com ]
 
 ////////////////////////////////////////////////////////////////////////////////
 
-NewDB is a toy DBMS based around the idea of a low-level intermediary language,
-similar to a high-level assembly, to which SQL and other types of queries can
-be compiled.  It will use small page files and separate server, database, table,
-and page locking for highly-concurrent read-write access and loose ACID-
-compliance (only enforced at the assembly level).
+NewDB is a toy DBMS based around the idea of a low-level intermediary query
+language similar to a high-level assembly, to which SQL and other types of
+queries can be compiled.  It will use small page files and separate server,
+database, table, and page locking for highly-concurrent read-write access and
+loose ACID-compliance (only enforced at the assembly level).
 
 ////////////////////////////////////////////////////////////////////////////////
