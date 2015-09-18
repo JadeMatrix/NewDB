@@ -6,9 +6,13 @@ extern "C" {
 
 /* Includes *******************************************************************//******************************************************************************/
 
+#include "ndb_vm_instruction.h"
+#include "ndb_connection.h"
+#include "ndb_statcode.h"
+
 /* Definitions ****************************************************************//******************************************************************************/
 
-#define NDB_VM_INST_ARGC       3
+#define NDB_VM_INST_ARGC 3
 
 /* General Types **************************************************************//******************************************************************************/
 
@@ -33,6 +37,18 @@ typedef struct ndb_vm_page*       ndb_vmf_page;
 typedef struct ndb_vm_response*   ndb_vmf_response;
 typedef struct ndb_vm_connection* ndb_vmf_connection;
 
+typedef union
+{
+    struct
+    {
+        ndb_vm_objtype;
+    } generic;
+    ndb_vm_field field;
+    ndb_vm_page page;
+    ndb_vm_response response;
+    ndb_vm_connection connection;
+} ndb_vm_object;
+
 typedef struct
 {
     ndb_vm_argtype type;
@@ -41,38 +57,30 @@ typedef struct
         ndb_vmf_integer    i;
         ndb_vmf_float      d;
         ndb_vmf_atom       a;
-        ndb_vmf_field      f;
+        ndb_vm_object    obj;
+        /*ndb_vmf_field      f;
         ndb_vmf_page       p;
         ndb_vmf_response   r;
-        ndb_vmf_connection c;
+        ndb_vmf_connection c;*/
     } value;
 } ndb_vm_arg;
 
+/*typedef struct
+{
+    long            inst_pt;
+    long          reg_count;
+    ndb_vm_arg*   registers;
+} ndb_vm_state;*/
+
+typedef unsigned char ndb_vm_reg_index;
+
 /* VM Process Types ***********************************************************//******************************************************************************/
 
-typedef long ndb_vm_statcode;
+typedef ndb_statcode (* ndb_vm_inst )( ndb_vm_reg_index, ndb_vm_arg*, long* );
 
-typedef ndb_vm_statcode (* ndb_vm_inst )( unsigned int, ndb_vm_arg*, long* );
+/* Function Prototypes ********************************************************//******************************************************************************/
 
-/* TODO: Move to ndb_vm.c */
-/*
- * in program parent caller (know ahead of time, arrangement doesn't chage):
- *   - program instruction list, allocated on stack or heap
- *   - register array(s), allocated on stack or heap
- *
- * passed to each instruction:
- *   - argument count
- *   - argument array
- *   - pointer to instruction pointer
- *
- * note that instruction pointer will be incremented after every instruction
- * call, so jumps must set pointer to value - 1 of where they want to go
- */
-typedef struct
-{
-    ndb_vm_inst instruction;
-    unsigned long args[ NDB_VM_INST_ARGC ];                                     /* A list of indexes to a private array of ndb_vm_arg's in parent caller */
-} ndb_vm_call;
+ndb_statcode ndb_execute( ndb_connection*, ndb_query* );
 
 /******************************************************************************//******************************************************************************/
 
