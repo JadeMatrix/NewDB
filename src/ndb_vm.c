@@ -103,23 +103,43 @@ static ndb_statcode ndb_vm_run_asm( ndb_vm_call_pattern* asm,
     
     long call_register_i;
     
-    do
+    while( 1 )
     {
         /* Set registers for call */
         call_register_i = NDB_VM_INST_ARGC + 1;
         while( --call_register_i )
             call_registers[ call_register_i ] = registers[ asm[ instruction_pt ].inputs[ call_register_i ] ];
         
-        /* Call instruction */
-        if( ( call_statcode = asm[ instruction_pt ].instruction( register_count,
-                                                                 call_registers,
-                                                                 &instruction_pt ) )
-            != NDB_STATCODE_OK )
+        switch( asm[ instruction_pt ].instruction )
         {
+            /* TODO: Handle other known, simple instructions like arithmetic */
+        case NDB_VM_INST_EXIT:
+            if( call_registers[ 0 ].type == NDB_VM_ARGTYPE_LONG )
+                call_statcode = call_registers[ 0 ].i;
+            else
+                call_statcode = NDB_STATCODE_WRONGARGTYPE;
+            goto cleanup_and_return;
+        default:
+            /* Call instruction & handle return code */
+            if( ( call_statcode = asm[ instruction_pt ].instruction( register_count,
+                                                                     call_registers,
+                                                                     &instruction_pt ) )
+                != NDB_STATCODE_OK )
+            {
+                switch( call_statcode )
+                {
+                    /* TODO: Handle other non-error codes here */
+                default:
+                    goto cleanup_and_return;
+                }
+            }
+            /* else... Skip statcode handling entirely so we don't multi-jump */
+            
             break;
         }
-    } while( asm[ instruction_pt ].instruction != NDB_VM_INST_EXIT );
+    }
     
+cleanup_and_return:
     return call_statcode;
 }
 
