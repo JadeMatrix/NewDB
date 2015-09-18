@@ -13,17 +13,18 @@
 typedef struct
 {
     ndb_vm_inst instruction;
-    ndb_vm_reg_index inputs[ NDB_VM_INST_ARGC ];                                /* A list of indexes to a private array of ndb_vm_arg's in parent caller */
+    ndb_vm_reg_index inputs[ NDB_VM_INSTARGC ];                                 /* A list of indexes to a private array of ndb_vm_arg's in parent caller */
 } ndb_vm_call_pattern;
 
+#if 0
 typedef struct
 {
     /* Raw instruction calls */
     unsigned long        inst_count,
     struct
     {
-        ndb_vm_reg_id    inputs [ NDB_VM_INST_ARGC ];
-        ndb_vm_reg_index indeces[ NDB_VM_INST_ARGC ];
+        ndb_vm_reg_id    inputs [ NDB_VM_INSTARGC ];
+        ndb_vm_reg_index indeces[ NDB_VM_INSTARGC ];
         ndb_vm_inst_id   instruction;
     }* insts,
     
@@ -52,6 +53,7 @@ typedef struct
     ndb_vm_reg_index rr_count;
     ndb_vm_reg_index cr_count;*/
 } ndb_vm_procinfo;
+#endif
 
 /* Static Globals *************************************************************//******************************************************************************/
 
@@ -75,7 +77,7 @@ typedef struct
 /*typedef struct
 {
     ndb_vm_inst instruction;
-    unsigned long args[ NDB_VM_INST_ARGC ];
+    unsigned long args[ NDB_VM_INSTARGC ];
 } ndb_vm_call;*/
 
 /* Optimizes execution of the assembly */
@@ -91,39 +93,39 @@ typedef struct
     
 }*/
 
-/* Runs the finalized assembly */
 static ndb_statcode ndb_vm_run_asm( ndb_vm_call_pattern* asm,
                                     ndb_vm_arg*          registers,
-                                    ndb_vm_reg_index     register_count )
+                                    ndb_vm_reg_index     register_count )       /* Runs the finalized assembly */
 {
     ndb_statcode call_statcode = NDB_STATCODE_OK;
     
-    ndb_vm_arg call_registers[ NDB_VM_INST_ARGC ];
+    ndb_vm_arg call_registers[ NDB_VM_INSTARGC ];
     long instruction_pt = 0;
     
     long call_register_i;
     
     while( 1 )
     {
-        /* Set registers for call */
-        call_register_i = NDB_VM_INST_ARGC + 1;
-        while( --call_register_i )
+        call_register_i = NDB_VM_INSTARGC + 1;
+        while( --call_register_i )                                              /* Set registers for call */
             call_registers[ call_register_i ] = registers[ asm[ instruction_pt ].inputs[ call_register_i ] ];
         
         switch( asm[ instruction_pt ].instruction )
         {
             /* TODO: Handle other known, simple instructions like arithmetic */
-        case NDB_VM_INST_EXIT:
+        case NDB_VM_INST_EXT:
             if( call_registers[ 0 ].type == NDB_VM_ARGTYPE_LONG )
                 call_statcode = call_registers[ 0 ].i;
             else
-                call_statcode = NDB_STATCODE_WRONGARGTYPE;
+                /* call_statcode = NDB_STATCODE_WRONGARGTYPE; */
+                call_statcode = NDB_VM_INST_EXT( register_count,
+                                                 call_registers,
+                                                 &instruction_pt );
             goto cleanup_and_return;
         default:
-            /* Call instruction & handle return code */
             if( ( call_statcode = asm[ instruction_pt ].instruction( register_count,
                                                                      call_registers,
-                                                                     &instruction_pt ) )
+                                                                     &instruction_pt ) )    /* Call instruction & handle return code */
                 != NDB_STATCODE_OK )
             {
                 switch( call_statcode )
@@ -132,33 +134,33 @@ static ndb_statcode ndb_vm_run_asm( ndb_vm_call_pattern* asm,
                 default:
                     goto cleanup_and_return;
                 }
-            }
-            /* else... Skip statcode handling entirely so we don't multi-jump */
+            }                                                                   /* else... Skip statcode handling entirely so we don't multi-jump */
             
             break;
         }
+        
+        ++instruction_pt;
     }
     
 cleanup_and_return:
+    
     return call_statcode;
 }
 
-/* Run a query */
-ndb_statcode ndb_execute( ndb_connection* connection, ndb_query* query )
+ndb_statcode ndb_execute( ndb_connection* connection, ndb_query* query )        /* Run a query */
 {
     ndb_statcode query_statcode;
     
     ndb_vm_call_pattern* query_program;
     
-    /* TODO: Use alloca() so we don't use so much stack space */
+    /* TODO: Just alloca() what we need so we don't use so much stack space */
     ndb_vm_arg query_registers[ 0x01 << ( sizeof( ndb_vm_reg_index ) * 8 ) ];
     
     /* Do some other stuff (that's an understatement)... */
     
-    /* Run the query program */
     query_statcode = ndb_vm_run_asm( query_program,
                                      query_registers,
-                                     query_register_count );
+                                     query_register_count );                    /* Run the query program */
     
     return query_statcode;
 }
