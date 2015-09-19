@@ -73,6 +73,13 @@ typedef struct
     ndb_vm_arg*   registers;
 } ndb_vm_state;*/
 
+/* TODO:
+ * Typedef for something to contain:
+ *  - program pointer
+ *  - instruction arguments
+ *  - registers
+ */
+
 typedef unsigned char ndb_vm_reg_index;
 
 /* VM Process Types ***********************************************************//******************************************************************************/

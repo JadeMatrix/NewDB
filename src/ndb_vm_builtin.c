@@ -8,13 +8,6 @@
 
 /* Implementations ************************************************************//******************************************************************************/
 
-/*void ndb_vm_register_builtins()
-{
-    int i;
-    for( i = 0; i < sizeof( builtins ) / sizeof( ndb_vm_instinfo ); ++i )
-        ndb_vm_register_instruction( &builtins[ i ] );
-}*/
-
 ndb_statcode ndm_vm_and( ndb_vm_reg_index argc,
                          ndb_vm_arg* argv,
                          long* proc_pt )

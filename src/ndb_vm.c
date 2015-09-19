@@ -16,82 +16,11 @@ typedef struct
     ndb_vm_reg_index inputs[ NDB_VM_INSTARGC ];                                 /* A list of indexes to a private array of ndb_vm_arg's in parent caller */
 } ndb_vm_call_pattern;
 
-#if 0
-typedef struct
-{
-    /* Raw instruction calls */
-    unsigned long        inst_count,
-    struct
-    {
-        ndb_vm_reg_id    inputs [ NDB_VM_INSTARGC ];
-        ndb_vm_reg_index indeces[ NDB_VM_INSTARGC ];
-        ndb_vm_inst_id   instruction;
-    }* insts,
-    
-    /* Single Registers */
-    ndb_vm_arg con;
-    ndb_vm_arg cmp;
-    ndb_vm_arg dvi;
-    ndb_vm_arg dmi;
-    ndb_vm_arg dvd;
-    
-    /* Variable Registers */
-    ndb_vm_arg* ir;
-    ndb_vm_arg* dr;
-    ndb_vm_arg* ar;
-    ndb_vm_arg* fr;
-    ndb_vm_arg* pr;
-    ndb_vm_arg* rr;
-    ndb_vm_arg* cr;
-    
-    /* Variable Register Counts */
-    /*ndb_vm_reg_index ir_count;
-    ndb_vm_reg_index dr_count;
-    ndb_vm_reg_index ar_count;
-    ndb_vm_reg_index fr_count;
-    ndb_vm_reg_index pr_count;
-    ndb_vm_reg_index rr_count;
-    ndb_vm_reg_index cr_count;*/
-} ndb_vm_procinfo;
-#endif
-
 /* Static Globals *************************************************************//******************************************************************************/
 
 
 
 /* Implementations ************************************************************//******************************************************************************/
-
-/*
- * in program parent caller (know ahead of time, arrangement doesn't chage):
- *   - program instruction list, allocated on stack or heap
- *   - register array(s), allocated on stack or heap
- *
- * passed to each instruction:
- *   - argument count
- *   - argument array
- *   - pointer to instruction pointer
- *
- * note that instruction pointer will be incremented after every instruction
- * call, so jumps must set pointer to value - 1 of where they want to go
- */
-/*typedef struct
-{
-    ndb_vm_inst instruction;
-    unsigned long args[ NDB_VM_INSTARGC ];
-} ndb_vm_call;*/
-
-/* Optimizes execution of the assembly */
-/*static ndb_statcode ndb_vm_optimize_asm( ndb_vm_procinfo* info_p )
-{
-    
-}*/
-
-/* Compresses registers (and instructions?) */
-/*static ndb_statcode ndb_vm_compress_asm( ndb_vm_procinfo* info_p,
-                                            ndb_vm_state_compressed* comp_p )
-{
-    
-}*/
 
 static ndb_statcode ndb_vm_run_asm( ndb_vm_call_pattern* asm,
                                     ndb_vm_arg*          registers,
@@ -127,39 +56,6 @@ static ndb_statcode ndb_vm_run_asm( ndb_vm_call_pattern* asm,
             goto cleanup_and_return;
         else
             ++instruction_pt;
-        
-        #if 0
-        switch( ( long )asm[ instruction_pt ].instruction )
-        {
-            /* TODO: Handle other known, simple instructions like arithmetic */
-        case ( long )NDB_VM_INST_EXT:
-            if( call_registers[ 0 ].type == NDB_VM_ARGTYPE_LONG )
-                call_statcode = call_registers[ 0 ].value.i;
-            else
-                /* call_statcode = NDB_STATCODE_WRONGARGTYPE; */
-                call_statcode = NDB_VM_INST_EXT( register_count,
-                                                 call_registers,
-                                                 &instruction_pt );
-            goto cleanup_and_return;
-        default:
-            if( ( call_statcode = asm[ instruction_pt ].instruction( register_count,
-                                                                     call_registers,
-                                                                     &instruction_pt ) )
-                != NDB_STATCODE_OK )                                            /* Call instruction & handle return code */
-            {
-                switch( call_statcode )
-                {
-                    /* TODO: Handle other non-error codes here */
-                default:
-                    goto cleanup_and_return;
-                }
-            }                                                                   /* else... Skip statcode handling entirely so we don't multi-jump */
-            
-            break;
-        }
-        
-        ++instruction_pt;
-        #endif
     }
     
 cleanup_and_return:
@@ -177,7 +73,19 @@ ndb_statcode ndb_execute( ndb_connection* connection, ndb_query* query )        
     /* TODO: Just alloca() what we need so we don't use so much stack space */
     ndb_vm_arg query_registers[ 0x01 << ( sizeof( ndb_vm_reg_index ) * 8 ) ];
     
-    /* Do some other stuff (that's an understatement)... */
+    /*
+     * in program parent caller (know ahead of time, arrangement doesn't chage):
+     *   - program instruction list, allocated on stack or heap
+     *   - register array(s), allocated on stack or heap
+     *
+     * passed to each instruction:
+     *   - argument count
+     *   - argument array
+     *   - pointer to instruction pointer
+     *
+     * note that instruction pointer will be incremented after every instruction
+     * call, so jumps must set pointer to value - 1 of where they want to go
+     */
     
     query_statcode = ndb_vm_run_asm( query_program,
                                      query_registers,
