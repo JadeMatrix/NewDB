@@ -125,8 +125,8 @@ static ndb_statcode ndb_vm_run_asm( ndb_vm_call_pattern* asm,
         default:
             if( ( call_statcode = asm[ instruction_pt ].instruction( register_count,
                                                                      call_registers,
-                                                                     &instruction_pt ) )    /* Call instruction & handle return code */
-                != NDB_STATCODE_OK )
+                                                                     &instruction_pt ) )
+                != NDB_STATCODE_OK )                                            /* Call instruction & handle return code */
             {
                 switch( call_statcode )
                 {
