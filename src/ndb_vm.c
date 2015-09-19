@@ -110,12 +110,31 @@ static ndb_statcode ndb_vm_run_asm( ndb_vm_call_pattern* asm,
         while( --call_register_i )                                              /* Set registers for call */
             call_registers[ call_register_i ] = registers[ asm[ instruction_pt ].inputs[ call_register_i ] ];
         
-        switch( asm[ instruction_pt ].instruction )
+        if( ( call_statcode = asm[ instruction_pt ].instruction( register_count,
+                                                                 call_registers,
+                                                                 &instruction_pt ) )
+            != NDB_STATCODE_OK )                                                /* Call instruction & handle return code */
+        {
+            switch( call_statcode )
+            {
+                /* TODO: Handle other non-error codes here */
+            default:
+                goto cleanup_and_return;
+            }
+        }
+        
+        if( asm[ instruction_pt ].instruction == NDB_VM_INST_EXT )
+            goto cleanup_and_return;
+        else
+            ++instruction_pt;
+        
+        #if 0
+        switch( ( long )asm[ instruction_pt ].instruction )
         {
             /* TODO: Handle other known, simple instructions like arithmetic */
-        case NDB_VM_INST_EXT:
+        case ( long )NDB_VM_INST_EXT:
             if( call_registers[ 0 ].type == NDB_VM_ARGTYPE_LONG )
-                call_statcode = call_registers[ 0 ].i;
+                call_statcode = call_registers[ 0 ].value.i;
             else
                 /* call_statcode = NDB_STATCODE_WRONGARGTYPE; */
                 call_statcode = NDB_VM_INST_EXT( register_count,
@@ -140,6 +159,7 @@ static ndb_statcode ndb_vm_run_asm( ndb_vm_call_pattern* asm,
         }
         
         ++instruction_pt;
+        #endif
     }
     
 cleanup_and_return:
@@ -152,6 +172,7 @@ ndb_statcode ndb_execute( ndb_connection* connection, ndb_query* query )        
     ndb_statcode query_statcode;
     
     ndb_vm_call_pattern* query_program;
+    ndb_vm_reg_index     query_register_count = 0;
     
     /* TODO: Just alloca() what we need so we don't use so much stack space */
     ndb_vm_arg query_registers[ 0x01 << ( sizeof( ndb_vm_reg_index ) * 8 ) ];

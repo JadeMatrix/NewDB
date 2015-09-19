@@ -1,8 +1,9 @@
 CC = clang
 # Using C89 because I'm a masochist
 CCFLAGS = -std=c89 -Wall -pedantic
-# COMPILE_FLAGS = ``
+COMPILE_FLAGS = ``
 # LINK_FLAGS = `` -lrt
+LINK_FLAGS = ``
 
 # Recipes for executables ######################################################
 
@@ -11,23 +12,21 @@ CCFLAGS = -std=c89 -Wall -pedantic
 
 # Recipes for object files #####################################################
 
-# make/foo.o: make_dir foo.c
-# 	${CC} ${CCFLAGS} ${COMPILE_FLAGS} -c foo.c -o make/foo.o
+make/ndb_vm.o: src/ndb_vm.c src/ndb_vm.h src/ndb_vm_builtin.h
+	@mkdir -p $(@D)
+	${CC} ${CCFLAGS} ${COMPILE_FLAGS} -c src/ndb_vm.c -o make/ndb_vm.o
 
-# "Recipes" (header dependencies) for source files #############################
-
-# foo.c: foo.h
+make/ndb_vm_builtin.o: src/ndb_vm_builtin.c src/ndb_vm_builtin.h
+	@mkdir -p $(@D)
+	${CC} ${CCFLAGS} ${COMPILE_FLAGS} -c src/ndb_vm_builtin.c -o make/ndb_vm_builtin.o
 
 # Phony recipes ################################################################
 
 all: 
 
-make_dir:
-	mkdir -p make
-
 clean:
 	rm -rf make
 
-.PHONY: all clean make_dir
+.PHONY: all clean
 
 

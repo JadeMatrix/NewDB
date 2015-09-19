@@ -6,8 +6,9 @@ extern "C" {
 
 /* Includes *******************************************************************//******************************************************************************/
 
-#include "ndb_vm_instruction.h"
+/*#include "ndb_vm_instruction.h"*/
 #include "ndb_connection.h"
+#include "ndb_query.h"
 #include "ndb_statcode.h"
 
 /* Definitions ****************************************************************//******************************************************************************/
@@ -32,12 +33,12 @@ typedef unsigned long ndb_vm_argtype;
 typedef long                      ndb_vmf_integer;
 typedef double                    ndb_vmf_float;
 typedef unsigned long             ndb_vmf_atom;
-typedef struct ndb_vm_field*      ndb_vmf_field;
-typedef struct ndb_vm_page*       ndb_vmf_page;
-typedef struct ndb_vm_response*   ndb_vmf_response;
-typedef struct ndb_vm_connection* ndb_vmf_connection;
+/*typedef struct ndb_field*         ndb_vmf_field;
+typedef struct ndb_page*          ndb_vmf_page;
+typedef struct ndb_response*      ndb_vmf_response;
+typedef struct ndb_connection*    ndb_vmf_connection;*/
 
-typedef union
+/*typedef union
 {
     struct
     {
@@ -47,7 +48,7 @@ typedef union
     ndb_vm_page page;
     ndb_vm_response response;
     ndb_vm_connection connection;
-} ndb_vm_object;
+} ndb_vm_object;*/
 
 typedef struct
 {
@@ -57,7 +58,7 @@ typedef struct
         ndb_vmf_integer    i;
         ndb_vmf_float      d;
         ndb_vmf_atom       a;
-        ndb_vm_object    obj;
+        /*ndb_vm_object    obj;*/
         /*ndb_vmf_field      f;
         ndb_vmf_page       p;
         ndb_vmf_response   r;

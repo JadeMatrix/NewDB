@@ -92,7 +92,7 @@ ndb_statcode ndm_vm_ext( ndb_vm_reg_index argc,
         switch( argv[ 0 ].type )
         {
         case NDB_VM_ARGTYPE_LONG:
-            return ( ndb_statcode )argv[ 0 ].i;
+            return ( ndb_statcode )argv[ 0 ].value.i;
         /*case NDB_VM_ARGTYPE_ATOM:
         case NDB_VM_ARGTYPE_RESPONSE:*/
         default:
@@ -171,7 +171,7 @@ ndb_statcode ndm_vm_rcp( ndb_vm_reg_index argc,
                          ndb_vm_arg* argv,
                          long* proc_pt )
 {
-    
+    return NDB_STATCODE_UNKNOWNERROR;
 }
 ndb_statcode ndm_vm_rct( ndb_vm_reg_index argc,
                          ndb_vm_arg* argv,
