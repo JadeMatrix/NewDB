@@ -10,11 +10,7 @@
 
 /* General Types **************************************************************//******************************************************************************/
 
-typedef struct
-{
-    ndb_vm_inst instruction;
-    ndb_vm_arg arguments[ NDB_VM_INSTARGC ];
-} ndb_vm_call_pattern;
+
 
 /* Static Globals *************************************************************//******************************************************************************/
 
@@ -22,8 +18,10 @@ typedef struct
 
 /* Implementations ************************************************************//******************************************************************************/
 
-static ndb_statcode ndb_vm_run_asm( ndb_vm_call_pattern* asm,
-                                    ndb_vm_state* state )                       /* Runs the finalized assembly */
+static ndb_statcode ndb_vm_run_asm( ndb_vm_state*    state,
+                                    ndb_vm_inst*     instruction_list,
+                                    ndb_vm_argtype** argument_types,
+                                    ndb_vm_argval**  argument_values )          /* Runs the finalized assembly */
 {
     ndb_statcode call_statcode = NDB_STATCODE_OK;
     
@@ -32,9 +30,10 @@ static ndb_statcode ndb_vm_run_asm( ndb_vm_call_pattern* asm,
     
     while( 1 )
     {
-        state -> arguments = asm[ *instruction_pt ].arguments;
+        state -> arg_types  = argument_types [ *instruction_pt ];
+        state -> arg_values = argument_values[ *instruction_pt ];
         
-        if( ( call_statcode = asm[ *instruction_pt ].instruction( state ) )
+        if( ( call_statcode = instruction_list[ *instruction_pt ]( state ) )
             != NDB_STATCODE_OK )                                                /* Call instruction & handle return code */
         {
             switch( call_statcode )
@@ -45,7 +44,7 @@ static ndb_statcode ndb_vm_run_asm( ndb_vm_call_pattern* asm,
             }
         }
         
-        if( asm[ *instruction_pt ].instruction == NDB_VM_INST_EXT )
+        if( instruction_list[ *instruction_pt ] == NDB_VM_INST_EXT )
             goto cleanup_and_return;
         else
             ++( *instruction_pt );
@@ -60,8 +59,10 @@ ndb_statcode ndb_execute( ndb_connection* connection, ndb_query* query )        
 {
     ndb_statcode query_statcode;
     
-    ndb_vm_call_pattern* query_program;
-    ndb_vm_state query_program_state;
+    ndb_vm_state     query_program_state;
+    ndb_vm_inst*     query_program_instructions;
+    ndb_vm_argtype** query_program_arg_types;
+    ndb_vm_argval**  query_program_arg_values;
     
     /*
      * in program parent caller (know ahead of time, arrangement doesn't chage):
@@ -77,7 +78,10 @@ ndb_statcode ndb_execute( ndb_connection* connection, ndb_query* query )        
      * call, so jumps must set pointer to value - 1 of where they want to go
      */
     
-    query_statcode = ndb_vm_run_asm( query_program, &query_program_state );     /* Run the query program */
+    query_statcode = ndb_vm_run_asm( &query_program_state,
+                                     query_program_instructions,
+                                     query_program_arg_types,
+                                     query_program_arg_values );                /* Run the query program */
     
     return query_statcode;
 }

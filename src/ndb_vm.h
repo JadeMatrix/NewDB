@@ -19,19 +19,6 @@ extern "C" {
 
 /* General Types **************************************************************//******************************************************************************/
 
-/* Meant to eventually be used when declaring new instructions & their possible arguments, thus unique bits */
-/*typedef enum
-{
-    NDB_VM_ARGTYPE_NULL       = 0x01,
-    NDB_VM_ARGTYPE_LONG       = 0x02,
-    NDB_VM_ARGTYPE_DOUBLE     = 0x04,
-    NDB_VM_ARGTYPE_ATOM       = 0x08,
-    NDB_VM_ARGTYPE_PAGE       = 0x10,
-    NDB_VM_ARGTYPE_FIELD      = 0x20,
-    NDB_VM_ARGTYPE_RESPONSE   = 0x40,
-    NDB_VM_ARGTYPE_CONNECTION = 0x80
-} ndb_vm_argtype;*/
-
 typedef enum
 {
     NDB_VM_REGTYPE_BLANK,
@@ -49,7 +36,7 @@ typedef enum
     NDB_VM_REGTYPE_DVI,
     NDB_VM_REGTYPE_DMI,
     NDB_VM_REGTYPE_DVD
-} ndb_vm_regtype;
+} ndb_vm_argtype;
 
 /* Register Types *************************************************************//******************************************************************************/
 
@@ -63,17 +50,13 @@ typedef struct ndb_connection* ndb_vmf_connection;
 
 typedef unsigned char ndb_vm_reg_index;
 
-typedef struct
+typedef union
 {
-    union
-    {
-        ndb_vm_reg_index index;                                                 /* N in irN, drN, arN, frN, prN, and rrN */
-        ndb_vmf_integer  i;                                                     /* Integer constant if type = NDB_VM_REGTYPE_CONST_I */
-        ndb_vmf_float    d;                                                     /* Float constant if type = NDB_VM_REGTYPE_CONST_D */
-        ndb_vmf_atom     a;                                                     /* Atom constant if type = NDB_VM_REGTYPE_CONST_A */
-    } value;                                                                    /* Unused if register is con, cmp, dvi, dmi, dvd, or is blank */
-    ndb_vm_regtype name;
-} ndb_vm_arg;
+    ndb_vm_reg_index index;                                                     /* N in irN, drN, arN, frN, prN, and rrN */
+    ndb_vmf_integer  i;                                                         /* Integer constant if type = NDB_VM_REGTYPE_CONST_I */
+    ndb_vmf_float    d;                                                         /* Float constant if type = NDB_VM_REGTYPE_CONST_D */
+    ndb_vmf_atom     a;                                                         /* Atom constant if type = NDB_VM_REGTYPE_CONST_A */
+} ndb_vm_argval;                                                                /* Unused if register is con, cmp, dvi, dmi, dvd, or is blank */
 
 typedef struct
 {
@@ -81,7 +64,8 @@ typedef struct
     signed long instruction_pt;
     
     /* Arguments to current instruction */
-    ndb_vm_arg* arguments;
+    ndb_vm_argtype* arg_types;
+    ndb_vm_argval*  arg_values;
     
     /* Registers */
     ndb_vmf_integer*    ir;
