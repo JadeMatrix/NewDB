@@ -6,14 +6,14 @@ extern "C" {
 
 /* General Types **************************************************************//******************************************************************************/
 
-typedef long ndb_statcode;
-
-/* Statcode Values ************************************************************//******************************************************************************/
-
-#define NDB_STATCODE_OK             ( ( ndb_statcode )0x00 )
-#define NDB_STATCODE_UNKNOWNERROR   ( ( ndb_statcode )0x01 )
-#define NDB_STATCODE_WRONGARGTYPE   ( ( ndb_statcode )0x02 )
-#define NDB_STATCODE_WRONGARGCOUNT  ( ( ndb_statcode )0x03 )
+typedef enum
+{
+    NDB_STATCODE_OK,
+    NDB_STATCODE_CANCEL,
+    NDB_STATCODE_UNKNOWNERROR,
+    NDB_STATCODE_WRONGARGTYPE,
+    NDB_STATCODE_WRONGARGCOUNT
+} ndb_statcode;
 
 /******************************************************************************//******************************************************************************/
 

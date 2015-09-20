@@ -17,16 +17,17 @@ extern "C" {
 
 /* General Types **************************************************************//******************************************************************************/
 
-typedef unsigned long ndb_vm_argtype;
-
-/* #define NDB_VM_ARGTYPE_NULL       ( ( ndb_vm_argtype )0x01 ) */
-#define NDB_VM_ARGTYPE_LONG       ( ( ndb_vm_argtype )0x02 )
-#define NDB_VM_ARGTYPE_DOUBLE     ( ( ndb_vm_argtype )0x04 )
-#define NDB_VM_ARGTYPE_ATOM       ( ( ndb_vm_argtype )0x08 )
-#define NDB_VM_ARGTYPE_PAGE       ( ( ndb_vm_argtype )0x10 )
-#define NDB_VM_ARGTYPE_FIELD      ( ( ndb_vm_argtype )0x20 )
-#define NDB_VM_ARGTYPE_RESPONSE   ( ( ndb_vm_argtype )0x40 )
-#define NDB_VM_ARGTYPE_CONNECTION ( ( ndb_vm_argtype )0x80 )
+typedef enum
+{
+    NDB_VM_ARGTYPE_NULL       = 0x01,
+    NDB_VM_ARGTYPE_LONG       = 0x02,
+    NDB_VM_ARGTYPE_DOUBLE     = 0x04,
+    NDB_VM_ARGTYPE_ATOM       = 0x08,
+    NDB_VM_ARGTYPE_PAGE       = 0x10,
+    NDB_VM_ARGTYPE_FIELD      = 0x20,
+    NDB_VM_ARGTYPE_RESPONSE   = 0x40,
+    NDB_VM_ARGTYPE_CONNECTION = 0x80
+} ndb_vm_argtype;
 
 /* Register Types *************************************************************//******************************************************************************/
 
