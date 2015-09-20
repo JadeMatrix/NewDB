@@ -34,8 +34,8 @@ static ndb_statcode ndb_vm_run_asm( ndb_vm_state*    state,
         if( *instruction_pt >= instruction_count )
             goto cleanup_and_return;                                            /* Exit if we've run out of instructions */
         
-        state -> arg_types  = argument_types [ *instruction_pt ];               /* Set up instruction call arguments in state */
-        state -> arg_values = argument_values[ *instruction_pt ];
+        state -> arg_types  = argument_types [ *instruction_pt * NDB_VM_INSTARGC ]; /* Set up instruction call arguments in state */
+        state -> arg_values = argument_values[ *instruction_pt * NDB_VM_INSTARGC ];
         
         if( ( call_statcode = instruction_list[ *instruction_pt ]( state ) )
             != NDB_STATCODE_OK )                                                /* Call instruction & handle return code */
