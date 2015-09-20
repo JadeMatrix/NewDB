@@ -13,7 +13,7 @@
 typedef struct
 {
     ndb_vm_inst instruction;
-    ndb_vm_reg_index inputs[ NDB_VM_INSTARGC ];                                 /* A list of indexes to a private array of ndb_vm_arg's in parent caller */
+    ndb_vm_arg arguments[ NDB_VM_INSTARGC ];
 } ndb_vm_call_pattern;
 
 /* Static Globals *************************************************************//******************************************************************************/
@@ -23,25 +23,18 @@ typedef struct
 /* Implementations ************************************************************//******************************************************************************/
 
 static ndb_statcode ndb_vm_run_asm( ndb_vm_call_pattern* asm,
-                                    ndb_vm_arg*          registers,
-                                    ndb_vm_reg_index     register_count )       /* Runs the finalized assembly */
+                                    ndb_vm_state* state )                       /* Runs the finalized assembly */
 {
     ndb_statcode call_statcode = NDB_STATCODE_OK;
     
-    ndb_vm_arg call_registers[ NDB_VM_INSTARGC ];
-    long instruction_pt = 0;
-    
-    long call_register_i;
+    signed long* instruction_pt = &( state -> instruction_pt );                 /* So we don't have to keep using -> */
+    *instruction_pt = 0;
     
     while( 1 )
     {
-        call_register_i = NDB_VM_INSTARGC + 1;
-        while( --call_register_i )                                              /* Set registers for call */
-            call_registers[ call_register_i ] = registers[ asm[ instruction_pt ].inputs[ call_register_i ] ];
+        state -> arguments = asm[ *instruction_pt ].arguments;
         
-        if( ( call_statcode = asm[ instruction_pt ].instruction( register_count,
-                                                                 call_registers,
-                                                                 &instruction_pt ) )
+        if( ( call_statcode = asm[ *instruction_pt ].instruction( state ) )
             != NDB_STATCODE_OK )                                                /* Call instruction & handle return code */
         {
             switch( call_statcode )
@@ -52,10 +45,10 @@ static ndb_statcode ndb_vm_run_asm( ndb_vm_call_pattern* asm,
             }
         }
         
-        if( asm[ instruction_pt ].instruction == NDB_VM_INST_EXT )
+        if( asm[ *instruction_pt ].instruction == NDB_VM_INST_EXT )
             goto cleanup_and_return;
         else
-            ++instruction_pt;
+            ++( *instruction_pt );
     }
     
 cleanup_and_return:
@@ -68,10 +61,7 @@ ndb_statcode ndb_execute( ndb_connection* connection, ndb_query* query )        
     ndb_statcode query_statcode;
     
     ndb_vm_call_pattern* query_program;
-    ndb_vm_reg_index     query_register_count = 0;
-    
-    /* TODO: Just alloca() what we need so we don't use so much stack space */
-    ndb_vm_arg query_registers[ 0x01 << ( sizeof( ndb_vm_reg_index ) * 8 ) ];
+    ndb_vm_state query_program_state;
     
     /*
      * in program parent caller (know ahead of time, arrangement doesn't chage):
@@ -87,9 +77,7 @@ ndb_statcode ndb_execute( ndb_connection* connection, ndb_query* query )        
      * call, so jumps must set pointer to value - 1 of where they want to go
      */
     
-    query_statcode = ndb_vm_run_asm( query_program,
-                                     query_registers,
-                                     query_register_count );                    /* Run the query program */
+    query_statcode = ndb_vm_run_asm( query_program, &query_program_state );     /* Run the query program */
     
     return query_statcode;
 }
