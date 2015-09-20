@@ -84,35 +84,41 @@ ndb_statcode ndm_vm_inv( ndb_vm_state* state )
 }
 ndb_statcode ndm_vm_jmp( ndb_vm_state* state )
 {
-    #ifdef DEBUG_VM_ARGCHECK
-    {
-        switch( state -> arg_types[ 0 ] )
-        {
-        case NDB_VM_REGTYPE_CMP:
-        case NDB_VM_REGTYPE__IR:
-        case NDB_VM_REGTYPE_CONST_I:
-            break;
-        case NDB_VM_REGTYPE_BLANK:
-            return NDB_STATCODE_WRONGARGCOUNT;
-        default:
-            return NDB_STATCODE_WRONGARGTYPE;
-        }
-        
-        switch( state -> arg_types[ 1 ] )
-        {
-        case NDB_VM_REGTYPE__IR:
-        case NDB_VM_REGTYPE_CONST_I:
-            break;
-        case NDB_VM_REGTYPE_BLANK:
-            return NDB_STATCODE_WRONGARGCOUNT;
-        default:
-            return NDB_STATCODE_WRONGARGTYPE;
-        }
-    }
-    #endif
+    signed long instruction_pt;
     
-    if( state -> arg_values[ 0 ].i )
-        state -> instruction_pt = state -> arg_values[ 1 ].i - 1;
+    switch( state -> arg_types[ 1 ] )
+    {
+    case NDB_VM_REGTYPE__IR:
+        instruction_pt = state -> ir[ state -> arg_values[ 1 ].index ] - 1;
+        break;
+    case NDB_VM_REGTYPE_CONST_I:
+        instruction_pt = state -> arg_values[ 1 ].i - 1;
+        break;
+    case NDB_VM_REGTYPE_BLANK:
+        return NDB_STATCODE_WRONGARGCOUNT;
+    default:
+        return NDB_STATCODE_WRONGARGTYPE;
+    }
+    
+    switch( state -> arg_types[ 0 ] )
+    {
+    case NDB_VM_REGTYPE_CMP:
+        if( state -> cmp )
+            state -> instruction_pt = instruction_pt;
+        break;
+    case NDB_VM_REGTYPE__IR:
+        if( state -> ir[ state -> arg_values[ 0 ].index ] )
+            state -> instruction_pt = instruction_pt;
+        break;
+    case NDB_VM_REGTYPE_CONST_I:
+        if( state -> arg_values[ 0 ].i )
+            state -> instruction_pt = instruction_pt;
+        break;
+    case NDB_VM_REGTYPE_BLANK:
+        return NDB_STATCODE_WRONGARGCOUNT;
+    default:
+        return NDB_STATCODE_WRONGARGTYPE;
+    }
     
     return NDB_STATCODE_OK;
 }
