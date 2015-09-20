@@ -14,7 +14,8 @@ typedef enum
     NDB_STATCODE_WRONGARGTYPE,
     NDB_STATCODE_WRONGARGCOUNT,
     NDB_STATCODE_VMPROCPTOOB,
-    NDB_STATCODE_READONLY
+    NDB_STATCODE_READONLY,
+    NDB_STATCODE_NOTIMPLEMENTED
 } ndb_statcode;
 
 /* Function Prototypes ********************************************************//******************************************************************************/
