@@ -79,6 +79,8 @@ typedef struct
     ndb_vmf_integer    dvi;
     ndb_vmf_integer    dmi;
     ndb_vmf_float      dvd;
+    
+    /* TODO: Atoms */
 } ndb_vm_state;
 
 /* VM Process Types ***********************************************************//******************************************************************************/
