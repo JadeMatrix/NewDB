@@ -41,7 +41,11 @@ typedef enum
 
 typedef long                   ndb_vmf_integer;
 typedef double                 ndb_vmf_float;
-typedef unsigned long          ndb_vmf_atom;
+typedef struct
+{
+    unsigned short pos;
+    unsigned short len;
+}                              ndb_vmf_atom;
 typedef struct ndb_field*      ndb_vmf_field;
 typedef struct ndb_page*       ndb_vmf_page;
 typedef struct ndb_response*   ndb_vmf_response;
@@ -78,7 +82,8 @@ typedef struct
     ndb_vmf_integer    dmi;
     ndb_vmf_float      dvd;
     
-    /* TODO: Atoms */
+    /* Query string for atoms */
+    const char* query_string;
 } ndb_vm_state;
 
 /* VM Process Types ***********************************************************//******************************************************************************/
