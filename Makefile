@@ -1,6 +1,6 @@
 CC = clang
 # Using C89 because I'm a masochist
-CCFLAGS = -std=c89 -Wall -pedantic
+CCFLAGS = -std=c89 -Wall -pedantic -Wpadded
 COMPILE_FLAGS = ``
 # LINK_FLAGS = `` -lrt
 LINK_FLAGS = ``
