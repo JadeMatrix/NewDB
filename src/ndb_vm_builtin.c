@@ -54,24 +54,17 @@ ndb_statcode ndm_vm_dvi( ndb_vm_state* state )
 }
 ndb_statcode ndm_vm_ext( ndb_vm_state* state )
 {
-    return NDB_STATCODE_UNKNOWNERROR;
-    #if 0
-    if( argc == 0 )
+    switch( state -> arg_types[ 0 ] )
+    {
+    case NDB_VM_REGTYPE_BLANK:
         return NDB_STATCODE_OK;
-    
-    if( argc == 1 )
-        switch( argv[ 0 ].type )
-        {
-        case NDB_VM_ARGTYPE_LONG:
-            return ( ndb_statcode )argv[ 0 ].value.i;
-        /*case NDB_VM_ARGTYPE_ATOM:
-        case NDB_VM_ARGTYPE_RESPONSE:*/
-        default:
-            return NDB_STATCODE_WRONGARGTYPE;
-        }
-    
-    return NDB_STATCODE_WRONGARGCOUNT;
-    #endif
+    case NDB_VM_REGTYPE_CONST_I:
+        return ( ndb_statcode )( state -> arg_values[ 0 ].i );
+    /*case NDB_VM_ARGTYPE_ATOM:
+        break;*/
+    default:
+        return NDB_STATCODE_WRONGARGTYPE;
+    }
 }
 ndb_statcode ndm_vm_hsh( ndb_vm_state* state )
 {
@@ -91,7 +84,37 @@ ndb_statcode ndm_vm_inv( ndb_vm_state* state )
 }
 ndb_statcode ndm_vm_jmp( ndb_vm_state* state )
 {
-    return NDB_STATCODE_UNKNOWNERROR;
+    #ifdef DEBUG_VM_ARGCHECK
+    {
+        switch( state -> arg_types[ 0 ] )
+        {
+        case NDB_VM_REGTYPE_CMP:
+        case NDB_VM_REGTYPE__IR:
+        case NDB_VM_REGTYPE_CONST_I:
+            break;
+        case NDB_VM_REGTYPE_BLANK:
+            return NDB_STATCODE_WRONGARGCOUNT;
+        default:
+            return NDB_STATCODE_WRONGARGTYPE;
+        }
+        
+        switch( state -> arg_types[ 1 ] )
+        {
+        case NDB_VM_REGTYPE__IR:
+        case NDB_VM_REGTYPE_CONST_I:
+            break;
+        case NDB_VM_REGTYPE_BLANK:
+            return NDB_STATCODE_WRONGARGCOUNT;
+        default:
+            return NDB_STATCODE_WRONGARGTYPE;
+        }
+    }
+    #endif
+    
+    if( state -> arg_values[ 0 ].i )
+        state -> instruction_pt = state -> arg_values[ 1 ].i - 1;
+    
+    return NDB_STATCODE_OK;
 }
 ndb_statcode ndm_vm_lf_( ndb_vm_state* state )
 {
