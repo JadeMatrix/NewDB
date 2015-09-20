@@ -5,6 +5,13 @@ COMPILE_FLAGS = ``
 # LINK_FLAGS = `` -lrt
 LINK_FLAGS = ``
 
+# Debug symbols:
+#  - DEBUG
+#    All debug symbols
+#  - DEBUG_VM_ARGCHECK
+#    Checks argument types & counts in VM instructions where such checks would
+#    impact performace (already enabled where it doesn't)
+
 # Recipes for executables ######################################################
 
 # make/foo: make/foo.o
