@@ -19,6 +19,7 @@
 /* Implementations ************************************************************//******************************************************************************/
 
 static ndb_statcode ndb_vm_run_asm( ndb_vm_state*    state,
+                                    long             instruction_count,
                                     ndb_vm_inst*     instruction_list,
                                     ndb_vm_argtype** argument_types,
                                     ndb_vm_argval**  argument_values )          /* Runs the finalized assembly */
@@ -28,9 +29,12 @@ static ndb_statcode ndb_vm_run_asm( ndb_vm_state*    state,
     signed long* instruction_pt = &( state -> instruction_pt );                 /* So we don't have to keep using -> */
     *instruction_pt = 0;
     
-    while( 1 )
+    while( *instruction_pt >= 0 )
     {
-        state -> arg_types  = argument_types [ *instruction_pt ];
+        if( *instruction_pt >= instruction_count )
+            goto cleanup_and_return;                                            /* Exit if we've run out of instructions */
+        
+        state -> arg_types  = argument_types [ *instruction_pt ];               /* Set up instruction call arguments in state */
         state -> arg_values = argument_values[ *instruction_pt ];
         
         if( ( call_statcode = instruction_list[ *instruction_pt ]( state ) )
@@ -50,6 +54,8 @@ static ndb_statcode ndb_vm_run_asm( ndb_vm_state*    state,
             ++( *instruction_pt );
     }
     
+    call_statcode = NDB_STATCODE_VMPROCPTOOB;
+    
 cleanup_and_return:
     
     return call_statcode;
@@ -60,6 +66,7 @@ ndb_statcode ndb_execute( ndb_connection* connection, ndb_query* query )        
     ndb_statcode query_statcode;
     
     ndb_vm_state     query_program_state;
+    long             instruction_count;
     ndb_vm_inst*     query_program_instructions;
     ndb_vm_argtype** query_program_arg_types;
     ndb_vm_argval**  query_program_arg_values;
@@ -79,6 +86,7 @@ ndb_statcode ndb_execute( ndb_connection* connection, ndb_query* query )        
      */
     
     query_statcode = ndb_vm_run_asm( &query_program_state,
+                                     instruction_count,
                                      query_program_instructions,
                                      query_program_arg_types,
                                      query_program_arg_values );                /* Run the query program */

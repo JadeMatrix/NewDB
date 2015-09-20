@@ -12,8 +12,13 @@ typedef enum
     NDB_STATCODE_CANCEL,
     NDB_STATCODE_UNKNOWNERROR,
     NDB_STATCODE_WRONGARGTYPE,
-    NDB_STATCODE_WRONGARGCOUNT
+    NDB_STATCODE_WRONGARGCOUNT,
+    NDB_STATCODE_VMPROCPTOOB
 } ndb_statcode;
+
+/* Function Prototypes ********************************************************//******************************************************************************/
+
+const char* ndb_statcode2str( ndb_statcode );
 
 /******************************************************************************//******************************************************************************/
 
