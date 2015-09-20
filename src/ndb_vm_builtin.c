@@ -2,6 +2,77 @@
 
 #include "ndb_vm_builtin.h"
 
+/* Macros *********************************************************************//******************************************************************************/
+
+#define SETUP_COMPARE   ndb_vm_argtype comparee_type;\
+                        ndb_vm_argtype comparand_type;\
+                        ndb_vm_argval  comparee;\
+                        ndb_vm_argval  comparand;\
+                        \
+                        switch( state -> arg_types[ 0 ] )\
+                        {\
+                        case NDB_VM_REGTYPE_BLANK:\
+                            return NDB_STATCODE_WRONGARGCOUNT;\
+                        case NDB_VM_REGTYPE_CONST_I:\
+                            comparee_type = NDB_VM_REGTYPE_CONST_I;\
+                            comparee.i = state -> arg_values[ 0 ].i;\
+                        case NDB_VM_REGTYPE_CONST_D:\
+                            comparee_type = NDB_VM_REGTYPE_CONST_D;\
+                            comparee.d = state -> arg_values[ 0 ].d;\
+                        case NDB_VM_REGTYPE__IR:\
+                            comparee_type = NDB_VM_REGTYPE_CONST_I;\
+                            comparee.i = state -> ir[ state -> arg_values[ 0 ].index ];\
+                        case NDB_VM_REGTYPE__DR:\
+                            comparee_type = NDB_VM_REGTYPE_CONST_D;\
+                            comparee.d = state -> dr[ state -> arg_values[ 0 ].index ];\
+                        case NDB_VM_REGTYPE_CMP:\
+                            comparee_type = NDB_VM_REGTYPE_CMP;\
+                            comparee.i = state -> cmp;\
+                        case NDB_VM_REGTYPE_DVI:\
+                            comparee_type = NDB_VM_REGTYPE_CONST_I;\
+                            comparee.i = state -> dvi;\
+                        case NDB_VM_REGTYPE_DMI:\
+                            comparee_type = NDB_VM_REGTYPE_CONST_I;\
+                            comparee.i = state -> dmi;\
+                        case NDB_VM_REGTYPE_DVD:\
+                            comparee_type = NDB_VM_REGTYPE_CONST_D;\
+                            comparee.d = state -> dvd;\
+                        default:\
+                            return NDB_STATCODE_WRONGARGTYPE;\
+                        }\
+                        \
+                        switch( state -> arg_types[ 1 ] )\
+                        {\
+                        case NDB_VM_REGTYPE_BLANK:\
+                            return NDB_STATCODE_WRONGARGCOUNT;\
+                        case NDB_VM_REGTYPE_CONST_I:\
+                            comparand_type = NDB_VM_REGTYPE_CONST_I;\
+                            comparand.i = state -> arg_values[ 1 ].i;\
+                        case NDB_VM_REGTYPE_CONST_D:\
+                            comparand_type = NDB_VM_REGTYPE_CONST_D;\
+                            comparand.d = state -> arg_values[ 1 ].d;\
+                        case NDB_VM_REGTYPE__IR:\
+                            comparand_type = NDB_VM_REGTYPE_CONST_I;\
+                            comparand.i = state -> ir[ state -> arg_values[ 1 ].index ];\
+                        case NDB_VM_REGTYPE__DR:\
+                            comparand_type = NDB_VM_REGTYPE_CONST_D;\
+                            comparand.d = state -> dr[ state -> arg_values[ 1 ].index ];\
+                        case NDB_VM_REGTYPE_CMP:\
+                            comparand_type = NDB_VM_REGTYPE_CMP;\
+                            comparand.i = state -> cmp;\
+                        case NDB_VM_REGTYPE_DVI:\
+                            comparand_type = NDB_VM_REGTYPE_CONST_I;\
+                            comparand.i = state -> dvi;\
+                        case NDB_VM_REGTYPE_DMI:\
+                            comparand_type = NDB_VM_REGTYPE_CONST_I;\
+                            comparand.i = state -> dmi;\
+                        case NDB_VM_REGTYPE_DVD:\
+                            comparand_type = NDB_VM_REGTYPE_CONST_D;\
+                            comparand.d = state -> dvd;\
+                        default:\
+                            return NDB_STATCODE_WRONGARGTYPE;\
+                        }
+
 /* Static Globals *************************************************************//******************************************************************************/
 
 
@@ -43,33 +114,399 @@ ndb_statcode ndm_vm_and( ndb_vm_state* state )
 }
 ndb_statcode ndm_vm_ceq( ndb_vm_state* state )
 {
-    /* IMPLEMENT: */
-    return NDB_STATCODE_NOTIMPLEMENTED;
+    SETUP_COMPARE
+    
+    switch( comparee_type )
+    {
+    case NDB_VM_REGTYPE_CONST_I:
+        {
+            switch( comparand_type )
+            {
+            case NDB_VM_REGTYPE_CONST_I:
+                state -> cmp = !!( comparee.i == comparand.i );
+                break;
+            case NDB_VM_REGTYPE_CONST_D:
+                state -> cmp = !!( comparee.i == comparand.d );
+                break;
+            case NDB_VM_REGTYPE_CMP:
+                state -> cmp = !!( comparee.i && comparand.i );
+                break;
+            default:
+                return NDB_STATCODE_UNKNOWNERROR;
+            }
+        }
+        break;
+    case NDB_VM_REGTYPE_CONST_D:
+        {
+            switch( comparand_type )
+            {
+            case NDB_VM_REGTYPE_CONST_I:
+                state -> cmp = !!( comparee.d == comparand.i );
+                break;
+            case NDB_VM_REGTYPE_CONST_D:
+                state -> cmp = !!( comparee.d == comparand.d );
+                break;
+            case NDB_VM_REGTYPE_CMP:
+                state -> cmp = !!( comparee.d && comparand.i );
+                break;
+            default:
+                return NDB_STATCODE_UNKNOWNERROR;
+            }
+        }
+        break;
+    case NDB_VM_REGTYPE_CMP:
+        {
+            switch( comparand_type )
+            {
+            case NDB_VM_REGTYPE_CONST_I:
+                state -> cmp = !!( comparee.i && comparand.i );
+                break;
+            case NDB_VM_REGTYPE_CONST_D:
+                state -> cmp = !!( comparee.i && comparand.d );
+                break;
+            case NDB_VM_REGTYPE_CMP:
+                state -> cmp = 1;
+                break;
+            default:
+                return NDB_STATCODE_UNKNOWNERROR;
+            }
+        }
+        break;
+    default:
+        return NDB_STATCODE_UNKNOWNERROR;
+    }
+    
+    return NDB_STATCODE_OK;
 }
 ndb_statcode ndm_vm_cge( ndb_vm_state* state )
 {
-    /* IMPLEMENT: */
-    return NDB_STATCODE_NOTIMPLEMENTED;
+    SETUP_COMPARE
+    
+    switch( comparee_type )
+    {
+    case NDB_VM_REGTYPE_CONST_I:
+        {
+            switch( comparand_type )
+            {
+            case NDB_VM_REGTYPE_CONST_I:
+                state -> cmp = !!( comparee.i >= comparand.i );
+                break;
+            case NDB_VM_REGTYPE_CONST_D:
+                state -> cmp = !!( comparee.i >= comparand.d );
+                break;
+            case NDB_VM_REGTYPE_CMP:
+                state -> cmp = !!( !!( comparee.i ) >= !!( comparand.i ) );
+                break;
+            default:
+                return NDB_STATCODE_UNKNOWNERROR;
+            }
+        }
+        break;
+    case NDB_VM_REGTYPE_CONST_D:
+        {
+            switch( comparand_type )
+            {
+            case NDB_VM_REGTYPE_CONST_I:
+                state -> cmp = !!( comparee.d >= comparand.i );
+                break;
+            case NDB_VM_REGTYPE_CONST_D:
+                state -> cmp = !!( comparee.d >= comparand.d );
+                break;
+            case NDB_VM_REGTYPE_CMP:
+                state -> cmp = !!( !!( comparee.d ) >= !!( comparand.i ) );
+                break;
+            default:
+                return NDB_STATCODE_UNKNOWNERROR;
+            }
+        }
+        break;
+    case NDB_VM_REGTYPE_CMP:
+        {
+            switch( comparand_type )
+            {
+            case NDB_VM_REGTYPE_CONST_I:
+                state -> cmp = !!( !!( comparee.i ) >= !!( comparand.i ) );
+                break;
+            case NDB_VM_REGTYPE_CONST_D:
+                state -> cmp = !!( !!( comparee.i ) >= !!( comparand.d ) );
+                break;
+            case NDB_VM_REGTYPE_CMP:
+                state -> cmp = 1;
+                break;
+            default:
+                return NDB_STATCODE_UNKNOWNERROR;
+            }
+        }
+        break;
+    default:
+        return NDB_STATCODE_UNKNOWNERROR;
+    }
+    
+    return NDB_STATCODE_OK;
 }
 ndb_statcode ndm_vm_cgt( ndb_vm_state* state )
 {
-    /* IMPLEMENT: */
-    return NDB_STATCODE_NOTIMPLEMENTED;
+    SETUP_COMPARE
+    
+    switch( comparee_type )
+    {
+    case NDB_VM_REGTYPE_CONST_I:
+        {
+            switch( comparand_type )
+            {
+            case NDB_VM_REGTYPE_CONST_I:
+                state -> cmp = !!( comparee.i > comparand.i );
+                break;
+            case NDB_VM_REGTYPE_CONST_D:
+                state -> cmp = !!( comparee.i > comparand.d );
+                break;
+            case NDB_VM_REGTYPE_CMP:
+                state -> cmp = !!( !!( comparee.i ) > !!( comparand.i ) );
+                break;
+            default:
+                return NDB_STATCODE_UNKNOWNERROR;
+            }
+        }
+        break;
+    case NDB_VM_REGTYPE_CONST_D:
+        {
+            switch( comparand_type )
+            {
+            case NDB_VM_REGTYPE_CONST_I:
+                state -> cmp = !!( comparee.d > comparand.i );
+                break;
+            case NDB_VM_REGTYPE_CONST_D:
+                state -> cmp = !!( comparee.d > comparand.d );
+                break;
+            case NDB_VM_REGTYPE_CMP:
+                state -> cmp = !!( !!( comparee.d ) > !!( comparand.i ) );
+                break;
+            default:
+                return NDB_STATCODE_UNKNOWNERROR;
+            }
+        }
+        break;
+    case NDB_VM_REGTYPE_CMP:
+        {
+            switch( comparand_type )
+            {
+            case NDB_VM_REGTYPE_CONST_I:
+                state -> cmp = !!( !!( comparee.i ) > !!( comparand.i ) );
+                break;
+            case NDB_VM_REGTYPE_CONST_D:
+                state -> cmp = !!( !!( comparee.i ) > !!( comparand.d ) );
+                break;
+            case NDB_VM_REGTYPE_CMP:
+                state -> cmp = 0;
+                break;
+            default:
+                return NDB_STATCODE_UNKNOWNERROR;
+            }
+        }
+        break;
+    default:
+        return NDB_STATCODE_UNKNOWNERROR;
+    }
+    
+    return NDB_STATCODE_OK;
 }
 ndb_statcode ndm_vm_cle( ndb_vm_state* state )
 {
-    /* IMPLEMENT: */
-    return NDB_STATCODE_NOTIMPLEMENTED;
+    SETUP_COMPARE
+    
+    switch( comparee_type )
+    {
+    case NDB_VM_REGTYPE_CONST_I:
+        {
+            switch( comparand_type )
+            {
+            case NDB_VM_REGTYPE_CONST_I:
+                state -> cmp = !!( comparee.i <= comparand.i );
+                break;
+            case NDB_VM_REGTYPE_CONST_D:
+                state -> cmp = !!( comparee.i <= comparand.d );
+                break;
+            case NDB_VM_REGTYPE_CMP:
+                state -> cmp = !!( !!( comparee.i ) <= !!( comparand.i ) );
+                break;
+            default:
+                return NDB_STATCODE_UNKNOWNERROR;
+            }
+        }
+        break;
+    case NDB_VM_REGTYPE_CONST_D:
+        {
+            switch( comparand_type )
+            {
+            case NDB_VM_REGTYPE_CONST_I:
+                state -> cmp = !!( comparee.d <= comparand.i );
+                break;
+            case NDB_VM_REGTYPE_CONST_D:
+                state -> cmp = !!( comparee.d <= comparand.d );
+                break;
+            case NDB_VM_REGTYPE_CMP:
+                state -> cmp = !!( !!( comparee.d ) <= !!( comparand.i ) );
+                break;
+            default:
+                return NDB_STATCODE_UNKNOWNERROR;
+            }
+        }
+        break;
+    case NDB_VM_REGTYPE_CMP:
+        {
+            switch( comparand_type )
+            {
+            case NDB_VM_REGTYPE_CONST_I:
+                state -> cmp = !!( !!( comparee.i ) <= !!( comparand.i ) );
+                break;
+            case NDB_VM_REGTYPE_CONST_D:
+                state -> cmp = !!( !!( comparee.i ) <= !!( comparand.d ) );
+                break;
+            case NDB_VM_REGTYPE_CMP:
+                state -> cmp = 1;
+                break;
+            default:
+                return NDB_STATCODE_UNKNOWNERROR;
+            }
+        }
+        break;
+    default:
+        return NDB_STATCODE_UNKNOWNERROR;
+    }
+    
+    return NDB_STATCODE_OK;
 }
 ndb_statcode ndm_vm_clt( ndb_vm_state* state )
 {
-    /* IMPLEMENT: */
-    return NDB_STATCODE_NOTIMPLEMENTED;
+    SETUP_COMPARE
+    
+    switch( comparee_type )
+    {
+    case NDB_VM_REGTYPE_CONST_I:
+        {
+            switch( comparand_type )
+            {
+            case NDB_VM_REGTYPE_CONST_I:
+                state -> cmp = !!( comparee.i < comparand.i );
+                break;
+            case NDB_VM_REGTYPE_CONST_D:
+                state -> cmp = !!( comparee.i < comparand.d );
+                break;
+            case NDB_VM_REGTYPE_CMP:
+                state -> cmp = !!( !!( comparee.i ) < !!( comparand.i ) );
+                break;
+            default:
+                return NDB_STATCODE_UNKNOWNERROR;
+            }
+        }
+        break;
+    case NDB_VM_REGTYPE_CONST_D:
+        {
+            switch( comparand_type )
+            {
+            case NDB_VM_REGTYPE_CONST_I:
+                state -> cmp = !!( comparee.d < comparand.i );
+                break;
+            case NDB_VM_REGTYPE_CONST_D:
+                state -> cmp = !!( comparee.d < comparand.d );
+                break;
+            case NDB_VM_REGTYPE_CMP:
+                state -> cmp = !!( !!( comparee.d ) < !!( comparand.i ) );
+                break;
+            default:
+                return NDB_STATCODE_UNKNOWNERROR;
+            }
+        }
+        break;
+    case NDB_VM_REGTYPE_CMP:
+        {
+            switch( comparand_type )
+            {
+            case NDB_VM_REGTYPE_CONST_I:
+                state -> cmp = !!( !!( comparee.i ) < !!( comparand.i ) );
+                break;
+            case NDB_VM_REGTYPE_CONST_D:
+                state -> cmp = !!( !!( comparee.i ) < !!( comparand.d ) );
+                break;
+            case NDB_VM_REGTYPE_CMP:
+                state -> cmp = 0;
+                break;
+            default:
+                return NDB_STATCODE_UNKNOWNERROR;
+            }
+        }
+        break;
+    default:
+        return NDB_STATCODE_UNKNOWNERROR;
+    }
+    
+    return NDB_STATCODE_OK;
 }
 ndb_statcode ndm_vm_cne( ndb_vm_state* state )
 {
-    /* IMPLEMENT: */
-    return NDB_STATCODE_NOTIMPLEMENTED;
+    SETUP_COMPARE
+    
+    switch( comparee_type )
+    {
+    case NDB_VM_REGTYPE_CONST_I:
+        {
+            switch( comparand_type )
+            {
+            case NDB_VM_REGTYPE_CONST_I:
+                state -> cmp = !( comparee.i == comparand.i );
+                break;
+            case NDB_VM_REGTYPE_CONST_D:
+                state -> cmp = !( comparee.i == comparand.d );
+                break;
+            case NDB_VM_REGTYPE_CMP:
+                state -> cmp = !( comparee.i && comparand.i );
+                break;
+            default:
+                return NDB_STATCODE_UNKNOWNERROR;
+            }
+        }
+        break;
+    case NDB_VM_REGTYPE_CONST_D:
+        {
+            switch( comparand_type )
+            {
+            case NDB_VM_REGTYPE_CONST_I:
+                state -> cmp = !( comparee.d == comparand.i );
+                break;
+            case NDB_VM_REGTYPE_CONST_D:
+                state -> cmp = !( comparee.d == comparand.d );
+                break;
+            case NDB_VM_REGTYPE_CMP:
+                state -> cmp = !( comparee.d && comparand.i );
+                break;
+            default:
+                return NDB_STATCODE_UNKNOWNERROR;
+            }
+        }
+        break;
+    case NDB_VM_REGTYPE_CMP:
+        {
+            switch( comparand_type )
+            {
+            case NDB_VM_REGTYPE_CONST_I:
+                state -> cmp = !( comparee.i && comparand.i );
+                break;
+            case NDB_VM_REGTYPE_CONST_D:
+                state -> cmp = !( comparee.i && comparand.d );
+                break;
+            case NDB_VM_REGTYPE_CMP:
+                state -> cmp = 0;
+                break;
+            default:
+                return NDB_STATCODE_UNKNOWNERROR;
+            }
+        }
+        break;
+    default:
+        return NDB_STATCODE_UNKNOWNERROR;
+    }
+    
+    return NDB_STATCODE_OK;
 }
 ndb_statcode ndm_vm_dec( ndb_vm_state* state )
 {
@@ -435,7 +872,7 @@ ndb_statcode ndm_vm_sr_( ndb_vm_state* state )
         value.d = state -> dr[ state -> arg_values[ 1 ].index ];
     case NDB_VM_REGTYPE_CMP:
         type = NDB_VM_REGTYPE_CONST_I;
-        value.i = state -> cmp;
+        value.i = !!( state -> cmp );
     case NDB_VM_REGTYPE_DVI:
         type = NDB_VM_REGTYPE_CONST_I;
         value.i = state -> dvi;
@@ -477,6 +914,36 @@ ndb_statcode ndm_vm_sr_( ndb_vm_state* state )
     return NDB_STATCODE_OK;
 }
 ndb_statcode ndm_vm_srf( ndb_vm_state* state )
+{
+    /* IMPLEMENT: */
+    return NDB_STATCODE_NOTIMPLEMENTED;
+}
+ndb_statcode ndm_vm_veq( ndb_vm_state* state )
+{
+    /* IMPLEMENT: */
+    return NDB_STATCODE_NOTIMPLEMENTED;
+}
+ndb_statcode ndm_vm_vge( ndb_vm_state* state )
+{
+    /* IMPLEMENT: */
+    return NDB_STATCODE_NOTIMPLEMENTED;
+}
+ndb_statcode ndm_vm_vgt( ndb_vm_state* state )
+{
+    /* IMPLEMENT: */
+    return NDB_STATCODE_NOTIMPLEMENTED;
+}
+ndb_statcode ndm_vm_vle( ndb_vm_state* state )
+{
+    /* IMPLEMENT: */
+    return NDB_STATCODE_NOTIMPLEMENTED;
+}
+ndb_statcode ndm_vm_vlt( ndb_vm_state* state )
+{
+    /* IMPLEMENT: */
+    return NDB_STATCODE_NOTIMPLEMENTED;
+}
+ndb_statcode ndm_vm_vne( ndb_vm_state* state )
 {
     /* IMPLEMENT: */
     return NDB_STATCODE_NOTIMPLEMENTED;

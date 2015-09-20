@@ -50,6 +50,12 @@ ndb_statcode ndb_vm_shs( ndb_vm_state* );
 ndb_statcode ndb_vm_snd( ndb_vm_state* );
 ndb_statcode ndb_vm_sr_( ndb_vm_state* );
 ndb_statcode ndb_vm_srf( ndb_vm_state* );
+ndb_statcode ndb_vm_veq( ndb_vm_state* );
+ndb_statcode ndb_vm_vge( ndb_vm_state* );
+ndb_statcode ndb_vm_vgt( ndb_vm_state* );
+ndb_statcode ndb_vm_vle( ndb_vm_state* );
+ndb_statcode ndb_vm_vlt( ndb_vm_state* );
+ndb_statcode ndb_vm_vne( ndb_vm_state* );
 ndb_statcode ndb_vm_wcd( ndb_vm_state* );
 ndb_statcode ndb_vm_wcp( ndb_vm_state* );
 ndb_statcode ndb_vm_wct( ndb_vm_state* );
@@ -98,6 +104,12 @@ ndb_statcode ndb_vm_xor( ndb_vm_state* );
 #define NDB_VM_INST_SND ndb_vm_snd
 #define NDB_VM_INST_SR_ ndb_vm_sr_
 #define NDB_VM_INST_SRF ndb_vm_srf
+#define NDB_VM_INST_VEQ ndb_vm_ceq
+#define NDB_VM_INST_VGE ndb_vm_cge
+#define NDB_VM_INST_VGT ndb_vm_cgt
+#define NDB_VM_INST_VLE ndb_vm_cle
+#define NDB_VM_INST_VLT ndb_vm_clt
+#define NDB_VM_INST_VNE ndb_vm_cne
 #define NDB_VM_INST_WCD ndb_vm_wcd
 #define NDB_VM_INST_WCP ndb_vm_wcp
 #define NDB_VM_INST_WCT ndb_vm_wct
