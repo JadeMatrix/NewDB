@@ -31,6 +31,10 @@ ndb_statcode ndm_vm_and( ndb_vm_state* state )
             }
         }
         break;
+    case NDB_VM_REGTYPE_CMP:
+    case NDB_VM_REGTYPE_DVI:
+    case NDB_VM_REGTYPE_DMI:
+        return NDB_STATCODE_READONLY;
     default:
         return NDB_STATCODE_WRONGARGTYPE;
     }
@@ -92,6 +96,10 @@ ndb_statcode ndm_vm_dec( ndb_vm_state* state )
     case NDB_VM_REGTYPE__IR:
         state -> ir[ state -> arg_values[ 0 ].index ] -= delta;
         break;
+    case NDB_VM_REGTYPE_CMP:
+    case NDB_VM_REGTYPE_DVI:
+    case NDB_VM_REGTYPE_DMI:
+        return NDB_STATCODE_READONLY;
     default:
         return NDB_STATCODE_WRONGARGTYPE;
     }
@@ -222,6 +230,10 @@ ndb_statcode ndm_vm_inc( ndb_vm_state* state )
     case NDB_VM_REGTYPE__IR:
         state -> ir[ state -> arg_values[ 0 ].index ] += delta;
         break;
+    case NDB_VM_REGTYPE_CMP:
+    case NDB_VM_REGTYPE_DVI:
+    case NDB_VM_REGTYPE_DMI:
+        return NDB_STATCODE_READONLY;
     default:
         return NDB_STATCODE_WRONGARGTYPE;
     }
@@ -237,6 +249,10 @@ ndb_statcode ndm_vm_inv( ndb_vm_state* state )
     case NDB_VM_REGTYPE__IR:
         state -> ir[ state -> arg_values[ 0 ].index ] = ~( state -> ir[ state -> arg_values[ 0 ].index ] );
         break;
+    case NDB_VM_REGTYPE_CMP:
+    case NDB_VM_REGTYPE_DVI:
+    case NDB_VM_REGTYPE_DMI:
+        return NDB_STATCODE_READONLY;
     default:
         return NDB_STATCODE_WRONGARGTYPE;
     }
@@ -321,6 +337,10 @@ ndb_statcode ndm_vm_or_( ndb_vm_state* state )
             }
         }
         break;
+    case NDB_VM_REGTYPE_CMP:
+    case NDB_VM_REGTYPE_DVI:
+    case NDB_VM_REGTYPE_DMI:
+        return NDB_STATCODE_READONLY;
     default:
         return NDB_STATCODE_WRONGARGTYPE;
     }
@@ -394,8 +414,67 @@ ndb_statcode ndm_vm_snd( ndb_vm_state* state )
 }
 ndb_statcode ndm_vm_sr_( ndb_vm_state* state )
 {
-    /* IMPLEMENT: */
-    return NDB_STATCODE_UNKNOWNERROR;
+    ndb_vm_argtype type;
+    ndb_vm_argval value;
+    
+    switch( state -> arg_types[ 1 ] )
+    {
+    case NDB_VM_REGTYPE_BLANK:
+        return NDB_STATCODE_WRONGARGCOUNT;
+    case NDB_VM_REGTYPE_CONST_I:
+        type = NDB_VM_REGTYPE_CONST_I;
+        value.i = state -> arg_values[ 1 ].i;
+    case NDB_VM_REGTYPE_CONST_D:
+        type = NDB_VM_REGTYPE_CONST_D;
+        value.d = state -> arg_values[ 1 ].d;
+    case NDB_VM_REGTYPE__IR:
+        type = NDB_VM_REGTYPE_CONST_I;
+        value.i = state -> ir[ state -> arg_values[ 1 ].index ];
+    case NDB_VM_REGTYPE__DR:
+        type = NDB_VM_REGTYPE_CONST_D;
+        value.d = state -> dr[ state -> arg_values[ 1 ].index ];
+    case NDB_VM_REGTYPE_CMP:
+        type = NDB_VM_REGTYPE_CONST_I;
+        value.i = state -> cmp;
+    case NDB_VM_REGTYPE_DVI:
+        type = NDB_VM_REGTYPE_CONST_I;
+        value.i = state -> dvi;
+    case NDB_VM_REGTYPE_DMI:
+        type = NDB_VM_REGTYPE_CONST_I;
+        value.i = state -> dmi;
+    case NDB_VM_REGTYPE_DVD:
+        type = NDB_VM_REGTYPE_CONST_D;
+        value.d = state -> dvd;
+    default:
+        return NDB_STATCODE_WRONGARGTYPE;
+    }
+    
+    switch( state -> arg_types[ 0 ] )
+    {
+    case NDB_VM_REGTYPE_BLANK:
+        return NDB_STATCODE_WRONGARGCOUNT;
+    case NDB_VM_REGTYPE__IR:
+        if( type == NDB_VM_REGTYPE_CONST_I )
+            state -> ir[ state -> arg_values[ 0 ].index ] = value.i;
+        else
+            state -> ir[ state -> arg_values[ 0 ].index ] = value.d;
+        break;
+    case NDB_VM_REGTYPE__DR:
+        if( type == NDB_VM_REGTYPE_CONST_I )
+            state -> dr[ state -> arg_values[ 0 ].index ] = value.i;
+        else
+            state -> dr[ state -> arg_values[ 0 ].index ] = value.d;
+        break;
+    case NDB_VM_REGTYPE_CMP:
+    case NDB_VM_REGTYPE_DVI:
+    case NDB_VM_REGTYPE_DMI:
+    case NDB_VM_REGTYPE_DVD:
+        return NDB_STATCODE_READONLY;
+    default:
+        return NDB_STATCODE_WRONGARGTYPE;
+    }
+    
+    return NDB_STATCODE_OK;
 }
 ndb_statcode ndm_vm_srf( ndb_vm_state* state )
 {
@@ -465,6 +544,10 @@ ndb_statcode ndm_vm_xor( ndb_vm_state* state )
             }
         }
         break;
+    case NDB_VM_REGTYPE_CMP:
+    case NDB_VM_REGTYPE_DVI:
+    case NDB_VM_REGTYPE_DMI:
+        return NDB_STATCODE_READONLY;
     default:
         return NDB_STATCODE_WRONGARGTYPE;
     }

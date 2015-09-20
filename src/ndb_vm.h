@@ -27,7 +27,6 @@ typedef enum
     NDB_VM_REGTYPE_CONST_A,
     NDB_VM_REGTYPE__IR,
     NDB_VM_REGTYPE__DR,
-    NDB_VM_REGTYPE__AR,
     NDB_VM_REGTYPE__FR,
     NDB_VM_REGTYPE__PR,
     NDB_VM_REGTYPE__RR,
@@ -70,7 +69,6 @@ typedef struct
     /* Registers */
     ndb_vmf_integer*    ir;
     ndb_vmf_float*      dr;
-    ndb_vmf_atom*       ar;
     ndb_vmf_field*      fr;
     ndb_vmf_page*       pr;
     ndb_vmf_response*   rr;
