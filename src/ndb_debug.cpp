@@ -4,6 +4,7 @@
 
 #include <map>
 #include <string>
+#include <sstream>
 
 #include "ndb_vm_builtin.h"
 
@@ -96,6 +97,61 @@ const char* ndb_debug_statcode2str( ndb_statcode code )
 const char* ndb_debug_builtin2str( ndb_vm_inst instruction )
 {
     return builtin_names[ instruction ].c_str();
+}
+
+const char* ndb_debug_arg2str( ndb_vm_argtype type, ndb_vm_argval val )
+{
+    std::stringstream ss;
+    
+    switch( type )
+    {
+    case NDB_VM_REGTYPE_BLANK:
+        return "";
+    case NDB_VM_REGTYPE_CONST_I:
+        ss << val.i;
+        return ss.str().c_str();
+        break;
+    case NDB_VM_REGTYPE_CONST_D:
+        ss << val.d;
+        return ss.str().c_str();
+        break;
+    case NDB_VM_REGTYPE_CONST_A:
+        ss << '{' << val.a.pos << ',' << val.a.len << '}';
+        return ss.str().c_str();
+        break;
+    case NDB_VM_REGTYPE__IR:
+        ss << "$ir" << ( int )val.index;
+        return ss.str().c_str();
+        break;
+    case NDB_VM_REGTYPE__DR:
+        ss << "$dr" << ( int )val.index;
+        return ss.str().c_str();
+        break;
+    case NDB_VM_REGTYPE__FR:
+        ss << "$fr" << ( int )val.index;
+        return ss.str().c_str();
+        break;
+    case NDB_VM_REGTYPE__PR:
+        ss << "$pr" << ( int )val.index;
+        return ss.str().c_str();
+        break;
+    case NDB_VM_REGTYPE__RR:
+        ss << "$rr" << ( int )val.index;
+        return ss.str().c_str();
+        break;
+    case NDB_VM_REGTYPE_CON:
+        return "$con";
+    case NDB_VM_REGTYPE_CMP:
+        return "$cmp";
+    case NDB_VM_REGTYPE_DVI:
+        return "$dvi";
+    case NDB_VM_REGTYPE_DMI:
+        return "$dmi";
+    case NDB_VM_REGTYPE_DVD:
+        return "$dvd";
+    default:
+        return "UNKNOWN ARGTYPE";
+    }
 }
 
 /******************************************************************************//******************************************************************************/

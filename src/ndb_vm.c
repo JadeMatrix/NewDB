@@ -174,6 +174,20 @@ int main( int argc, char* argv[] )
         test_argtypes[ 4 ][ 2 ] = NDB_VM_REGTYPE_BLANK;
     }
     
+    {
+        int i;
+        printf( "Program:\n" );
+        for( i = 0; i < instruction_count; ++i )
+        {
+            printf( "%i:    %s %s %s %s\n",
+                    i,
+                    ndb_debug_builtin2str( test_instructions[ i ] ),
+                    ndb_debug_arg2str( test_argtypes[ i ][ 0 ], test_argvals[ i ][ 0 ] ),
+                    ndb_debug_arg2str( test_argtypes[ i ][ 1 ], test_argvals[ i ][ 1 ] ),
+                    ndb_debug_arg2str( test_argtypes[ i ][ 2 ], test_argvals[ i ][ 2 ] ) );
+        }
+    }
+    
     query_statcode = ndb_vm_run_asm( &query_program_state,
                                      instruction_count,
                                      ( ndb_vm_inst* )test_instructions,
