@@ -179,7 +179,7 @@ int main( int argc, char* argv[] )
         printf( "Program:\n" );
         for( i = 0; i < instruction_count; ++i )
         {
-            printf( "%i:    %s %s %s %s\n",
+            printf( "%i:\t%s\t%s\t%s\t%s\n",
                     i,
                     ndb_debug_builtin2str( test_instructions[ i ] ),
                     ndb_debug_arg2str( test_argtypes[ i ][ 0 ], test_argvals[ i ][ 0 ] ),
