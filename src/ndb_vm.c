@@ -6,6 +6,7 @@
 /* DEBUG: */ #include <stdio.h>
 
 #include "ndb_vm_builtin.h"
+#include "ndb_debug.h"
 
 /* Macros *********************************************************************//******************************************************************************/
 
@@ -36,7 +37,7 @@ static ndb_statcode ndb_vm_run_asm( ndb_vm_state*   state,
     {
         /* DEBUG: */ printf( "Executing instruction %li: %s (0x%X)\n",
                              *instruction_pt,
-                             ndb_builtin2str( instruction_list[ *instruction_pt ] ),
+                             ndb_debug_builtin2str( instruction_list[ *instruction_pt ] ),
                              ( unsigned int )instruction_list[ *instruction_pt ] );
         
         if( *instruction_pt >= instruction_count )
@@ -48,7 +49,7 @@ static ndb_statcode ndb_vm_run_asm( ndb_vm_state*   state,
         if( ( call_statcode = instruction_list[ *instruction_pt ]( state ) )
             != NDB_STATCODE_OK )                                                /* Call instruction & handle return code */
         {
-            /* DEBUG: */ printf( "Instruction return %s\n", ndb_statcode2str( call_statcode ) );
+            /* DEBUG: */ printf( "Instruction return %s\n", ndb_debug_statcode2str( call_statcode ) );
             
             switch( call_statcode )
             {
@@ -74,7 +75,7 @@ static ndb_statcode ndb_vm_run_asm( ndb_vm_state*   state,
     
 cleanup_and_return:
     
-    /* DEBUG: */ printf( "Exiting with statcode %s\n", ndb_statcode2str( call_statcode ) );
+    /* DEBUG: */ printf( "Exiting with statcode %s\n", ndb_debug_statcode2str( call_statcode ) );
     return call_statcode;
 }
 

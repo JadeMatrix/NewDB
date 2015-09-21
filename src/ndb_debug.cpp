@@ -1,9 +1,11 @@
 /* Includes *******************************************************************//******************************************************************************/
 
-#include "ndb_vm_builtin.h"
+#include "ndb_debug.h"
 
 #include <map>
 #include <string>
+
+#include "ndb_vm_builtin.h"
 
 /* Static Globals *************************************************************//******************************************************************************/
 
@@ -68,7 +70,30 @@ namespace
 
 /* Implementations ************************************************************//******************************************************************************/
 
-const char* ndb_builtin2str( ndb_vm_inst instruction )
+const char* ndb_debug_statcode2str( ndb_statcode code )
+{
+    switch( code )
+    {
+    case NDB_STATCODE_OK:
+        return "OK";
+    case NDB_STATCODE_CANCEL:
+        return "CANCEL";
+    case NDB_STATCODE_UNKNOWNERROR:
+        return "UNKNOWN ERROR";
+    case NDB_STATCODE_WRONGARGTYPE:
+        return "WRONG ARGUMENT TYPE";
+    case NDB_STATCODE_WRONGARGCOUNT:
+        return "WRONG ARGUMENT COUNT";
+    case NDB_STATCODE_VMPROCPTOOB:
+        return "VM PROCESS POINTER OUT-OF-BOUNDS";
+    case NDB_STATCODE_READONLY:
+        return "READ-ONLY";
+    case NDB_STATCODE_NOTIMPLEMENTED:
+        return "NOT IMPLEMENTED";
+    }
+}
+
+const char* ndb_debug_builtin2str( ndb_vm_inst instruction )
 {
     return builtin_names[ instruction ].c_str();
 }

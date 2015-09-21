@@ -66,8 +66,6 @@ ndb_statcode ndb_vm_wup( ndb_vm_state* );
 ndb_statcode ndb_vm_wut( ndb_vm_state* );
 ndb_statcode ndb_vm_xor( ndb_vm_state* );
 
-const char* ndb_builtin2str( ndb_vm_inst );
-
 /* Definitions ****************************************************************//******************************************************************************/
 
 #define NDB_VM_INST_AND ( ( ndb_vm_inst )ndb_vm_and )
