@@ -2,8 +2,6 @@
 
 #include "ndb_vm_builtin.h"
 
-/* DEBUG: */ #include <stdio.h>
-
 /* Macros *********************************************************************//******************************************************************************/
 
 #define SETUP_COMPARE   ndb_vm_argtype comparee_type;\
@@ -398,8 +396,6 @@ ndb_statcode ndb_vm_clt( ndb_vm_state* state )
 {
     SETUP_COMPARE
     
-    /* DEBUG: */ printf( "clt\n" );
-    
     switch( comparee_type )
     {
     case NDB_VM_REGTYPE_CONST_I:
@@ -640,8 +636,6 @@ ndb_statcode ndb_vm_dvi( ndb_vm_state* state )
 }
 ndb_statcode ndb_vm_ext( ndb_vm_state* state )
 {
-    /* DEBUG: */ printf( "ext\n" );
-    
     switch( state -> arg_types[ 0 ] )
     {
     case NDB_VM_REGTYPE_BLANK:
@@ -667,8 +661,6 @@ ndb_statcode ndb_vm_hsi( ndb_vm_state* state )
 ndb_statcode ndb_vm_inc( ndb_vm_state* state )
 {
     ndb_vmf_integer delta;
-    
-    /* DEBUG: */ printf( "inc\n" );
     
     switch( state -> arg_types[ 1 ] )
     {
@@ -723,8 +715,6 @@ ndb_statcode ndb_vm_inv( ndb_vm_state* state )
 ndb_statcode ndb_vm_jmp( ndb_vm_state* state )
 {
     signed long instruction_pt;
-    
-    /* DEBUG: */ printf( "jmp\n" );
     
     switch( state -> arg_types[ 1 ] )
     {
@@ -879,8 +869,6 @@ ndb_statcode ndb_vm_sr_( ndb_vm_state* state )
 {
     ndb_vm_argtype type;
     ndb_vm_argval value;
-    
-    /* DEBUG: */ printf( "sr\n" );
     
     switch( state -> arg_types[ 1 ] )
     {

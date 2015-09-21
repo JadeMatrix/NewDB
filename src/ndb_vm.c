@@ -34,15 +34,16 @@ static ndb_statcode ndb_vm_run_asm( ndb_vm_state*   state,
     
     while( *instruction_pt >= 0 )
     {
-        /* DEBUG: */ printf( "Executing instruction %li\n", *instruction_pt );
+        /* DEBUG: */ printf( "Executing instruction %li: %s (0x%X)\n",
+                             *instruction_pt,
+                             ndb_builtin2str( instruction_list[ *instruction_pt ] ),
+                             ( unsigned int )instruction_list[ *instruction_pt ] );
         
         if( *instruction_pt >= instruction_count )
             goto cleanup_and_return;                                            /* Exit if we've run out of instructions */
         
         state -> arg_types  = &argument_types [ *instruction_pt * NDB_VM_INSTARGC ];    /* Set up instruction call arguments in state */
         state -> arg_values = &argument_values[ *instruction_pt * NDB_VM_INSTARGC ];
-        
-        /* DEBUG: */ printf( "Instruction address 0x%X\n", ( unsigned int )instruction_list[ *instruction_pt ] );
         
         if( ( call_statcode = instruction_list[ *instruction_pt ]( state ) )
             != NDB_STATCODE_OK )                                                /* Call instruction & handle return code */

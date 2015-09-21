@@ -49,7 +49,7 @@ typedef struct
 typedef struct ndb_field*      ndb_vmf_field;
 typedef struct ndb_page*       ndb_vmf_page;
 typedef struct ndb_response*   ndb_vmf_response;
-typedef struct ndb_connection* ndb_vmf_connection;
+typedef        ndb_connection* ndb_vmf_connection;
 
 typedef unsigned char ndb_vm_reg_index;
 
