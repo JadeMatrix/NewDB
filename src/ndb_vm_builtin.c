@@ -2,6 +2,8 @@
 
 #include "ndb_vm_builtin.h"
 
+/* DEBUG: */ #include <stdio.h>
+
 /* Macros *********************************************************************//******************************************************************************/
 
 #define SETUP_COMPARE   ndb_vm_argtype comparee_type;\
@@ -16,27 +18,35 @@
                         case NDB_VM_REGTYPE_CONST_I:\
                             comparee_type = NDB_VM_REGTYPE_CONST_I;\
                             comparee.i = state -> arg_values[ 0 ].i;\
+                            break;\
                         case NDB_VM_REGTYPE_CONST_D:\
                             comparee_type = NDB_VM_REGTYPE_CONST_D;\
                             comparee.d = state -> arg_values[ 0 ].d;\
+                            break;\
                         case NDB_VM_REGTYPE__IR:\
                             comparee_type = NDB_VM_REGTYPE_CONST_I;\
                             comparee.i = state -> ir[ state -> arg_values[ 0 ].index ];\
+                            break;\
                         case NDB_VM_REGTYPE__DR:\
                             comparee_type = NDB_VM_REGTYPE_CONST_D;\
                             comparee.d = state -> dr[ state -> arg_values[ 0 ].index ];\
+                            break;\
                         case NDB_VM_REGTYPE_CMP:\
                             comparee_type = NDB_VM_REGTYPE_CMP;\
                             comparee.i = state -> cmp;\
+                            break;\
                         case NDB_VM_REGTYPE_DVI:\
                             comparee_type = NDB_VM_REGTYPE_CONST_I;\
                             comparee.i = state -> dvi;\
+                            break;\
                         case NDB_VM_REGTYPE_DMI:\
                             comparee_type = NDB_VM_REGTYPE_CONST_I;\
                             comparee.i = state -> dmi;\
+                            break;\
                         case NDB_VM_REGTYPE_DVD:\
                             comparee_type = NDB_VM_REGTYPE_CONST_D;\
                             comparee.d = state -> dvd;\
+                            break;\
                         default:\
                             return NDB_STATCODE_WRONGARGTYPE;\
                         }\
@@ -48,27 +58,35 @@
                         case NDB_VM_REGTYPE_CONST_I:\
                             comparand_type = NDB_VM_REGTYPE_CONST_I;\
                             comparand.i = state -> arg_values[ 1 ].i;\
+                            break;\
                         case NDB_VM_REGTYPE_CONST_D:\
                             comparand_type = NDB_VM_REGTYPE_CONST_D;\
                             comparand.d = state -> arg_values[ 1 ].d;\
+                            break;\
                         case NDB_VM_REGTYPE__IR:\
                             comparand_type = NDB_VM_REGTYPE_CONST_I;\
                             comparand.i = state -> ir[ state -> arg_values[ 1 ].index ];\
+                            break;\
                         case NDB_VM_REGTYPE__DR:\
                             comparand_type = NDB_VM_REGTYPE_CONST_D;\
                             comparand.d = state -> dr[ state -> arg_values[ 1 ].index ];\
+                            break;\
                         case NDB_VM_REGTYPE_CMP:\
                             comparand_type = NDB_VM_REGTYPE_CMP;\
                             comparand.i = state -> cmp;\
+                            break;\
                         case NDB_VM_REGTYPE_DVI:\
                             comparand_type = NDB_VM_REGTYPE_CONST_I;\
                             comparand.i = state -> dvi;\
+                            break;\
                         case NDB_VM_REGTYPE_DMI:\
                             comparand_type = NDB_VM_REGTYPE_CONST_I;\
                             comparand.i = state -> dmi;\
+                            break;\
                         case NDB_VM_REGTYPE_DVD:\
                             comparand_type = NDB_VM_REGTYPE_CONST_D;\
                             comparand.d = state -> dvd;\
+                            break;\
                         default:\
                             return NDB_STATCODE_WRONGARGTYPE;\
                         }
@@ -380,6 +398,8 @@ ndb_statcode ndb_vm_clt( ndb_vm_state* state )
 {
     SETUP_COMPARE
     
+    /* DEBUG: */ printf( "clt\n" );
+    
     switch( comparee_type )
     {
     case NDB_VM_REGTYPE_CONST_I:
@@ -620,6 +640,8 @@ ndb_statcode ndb_vm_dvi( ndb_vm_state* state )
 }
 ndb_statcode ndb_vm_ext( ndb_vm_state* state )
 {
+    /* DEBUG: */ printf( "ext\n" );
+    
     switch( state -> arg_types[ 0 ] )
     {
     case NDB_VM_REGTYPE_BLANK:
@@ -645,6 +667,8 @@ ndb_statcode ndb_vm_hsi( ndb_vm_state* state )
 ndb_statcode ndb_vm_inc( ndb_vm_state* state )
 {
     ndb_vmf_integer delta;
+    
+    /* DEBUG: */ printf( "inc\n" );
     
     switch( state -> arg_types[ 1 ] )
     {
@@ -699,6 +723,8 @@ ndb_statcode ndb_vm_inv( ndb_vm_state* state )
 ndb_statcode ndb_vm_jmp( ndb_vm_state* state )
 {
     signed long instruction_pt;
+    
+    /* DEBUG: */ printf( "jmp\n" );
     
     switch( state -> arg_types[ 1 ] )
     {
@@ -854,6 +880,8 @@ ndb_statcode ndb_vm_sr_( ndb_vm_state* state )
     ndb_vm_argtype type;
     ndb_vm_argval value;
     
+    /* DEBUG: */ printf( "sr\n" );
+    
     switch( state -> arg_types[ 1 ] )
     {
     case NDB_VM_REGTYPE_BLANK:
@@ -861,27 +889,35 @@ ndb_statcode ndb_vm_sr_( ndb_vm_state* state )
     case NDB_VM_REGTYPE_CONST_I:
         type = NDB_VM_REGTYPE_CONST_I;
         value.i = state -> arg_values[ 1 ].i;
+        break;
     case NDB_VM_REGTYPE_CONST_D:
         type = NDB_VM_REGTYPE_CONST_D;
         value.d = state -> arg_values[ 1 ].d;
+        break;
     case NDB_VM_REGTYPE__IR:
         type = NDB_VM_REGTYPE_CONST_I;
         value.i = state -> ir[ state -> arg_values[ 1 ].index ];
+        break;
     case NDB_VM_REGTYPE__DR:
         type = NDB_VM_REGTYPE_CONST_D;
         value.d = state -> dr[ state -> arg_values[ 1 ].index ];
+        break;
     case NDB_VM_REGTYPE_CMP:
         type = NDB_VM_REGTYPE_CONST_I;
         value.i = !!( state -> cmp );
+        break;
     case NDB_VM_REGTYPE_DVI:
         type = NDB_VM_REGTYPE_CONST_I;
         value.i = state -> dvi;
+        break;
     case NDB_VM_REGTYPE_DMI:
         type = NDB_VM_REGTYPE_CONST_I;
         value.i = state -> dmi;
+        break;
     case NDB_VM_REGTYPE_DVD:
         type = NDB_VM_REGTYPE_CONST_D;
         value.d = state -> dvd;
+        break;
     default:
         return NDB_STATCODE_WRONGARGTYPE;
     }
