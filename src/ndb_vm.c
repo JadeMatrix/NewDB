@@ -137,13 +137,6 @@ int main( int argc, char* argv[] )
     ndb_vm_argtype test_argtypes[ 5 ][ 3 ];
     ndb_vm_argval  test_argvals[ 5 ][ 3 ];
     
-    char iden_string[ NDB_PAGE_IDEN_CHARLEN + 1 ];
-    ndb_page_iden test_iden = 0x01234567890abcde;
-    ndb_encode_page_iden( test_iden, iden_string );
-    iden_string[ NDB_PAGE_IDEN_CHARLEN ] = '\0';
-    printf( "%s\n", iden_string );
-    return 0;
-    
     instruction_count = 5;
     query_program_state.ir = ( ndb_vmf_integer* )alloca( sizeof( ndb_vmf_integer ) );
     
