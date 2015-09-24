@@ -7,8 +7,8 @@ extern "C" {
 /* Includes *******************************************************************//******************************************************************************/
 
 /*#include "ndb_field.h"
-#include "ndb_page.h"
 #include "ndb_response.h"*/
+#include "ndb_page.h"
 #include "ndb_connection.h"
 #include "ndb_query.h"
 #include "ndb_statcode.h"
@@ -47,7 +47,7 @@ typedef struct
     unsigned short len;
 }                              ndb_vmf_atom;
 typedef struct ndb_field*      ndb_vmf_field;
-typedef struct ndb_page*       ndb_vmf_page;
+typedef        ndb_page*       ndb_vmf_page;
 typedef struct ndb_response*   ndb_vmf_response;
 typedef        ndb_connection* ndb_vmf_connection;
 
