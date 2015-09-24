@@ -19,7 +19,7 @@ LINK_FLAGS = ``
 # TODO: Auto-generate (automake?)
 NDB_CONNECTION_H = src/ndb_connection.h
 NDB_DEBUG_H = src/ndb_debug.h ${NDB_VM_H}
-NDB_PAGE_H = src/ndb_page.h
+NDB_PAGE_H = src/ndb_page.h #{NDB_STATCODE_H}
 NDB_QUERY_H = src/ndb_query.h
 NDB_STATCODE_H = src/ndb_statcode.h
 NDB_VM_H = src/ndb_vm.h ${NDB_PAGE_H} ${NDB_CONNECTION_H} ${NDB_QUERY_H} ${NDB_STATCODE_H}
@@ -27,8 +27,8 @@ NDB_VM_BUILTIN_H = src/ndb_vm_builtin.h ${NDB_VM_H}
 
 # Recipes for executables ######################################################
 
-make/test: make/ndb_vm.o make/ndb_vm_builtin.o make/ndb_debug.o
-	${CPPC} ${LINK_FLAGS} make/ndb_vm.o make/ndb_vm_builtin.o make/ndb_debug.o -o make/test
+make/test: make/ndb_vm.o make/ndb_vm_builtin.o make/ndb_debug.o make/ndb_page.o
+	${CPPC} ${LINK_FLAGS} make/ndb_vm.o make/ndb_vm_builtin.o make/ndb_debug.o make/ndb_page.o -o make/test
 
 # Recipes for object files #####################################################
 
@@ -39,6 +39,10 @@ make/ndb_vm.o: src/ndb_vm.c ${NDB_VM_H} ${NDB_VM_BUILTIN_H} ${NDB_DEBUG_H}
 make/ndb_vm_builtin.o: src/ndb_vm_builtin.c ${NDB_VM_BUILTIN_H}
 	@mkdir -p $(@D)
 	${CC} ${CCFLAGS} ${COMPILE_FLAGS} -c src/ndb_vm_builtin.c -o make/ndb_vm_builtin.o
+
+make/ndb_page.o: src/ndb_page.c ${NDB_PAGE_H}
+	@mkdir -p $(@D)
+	${CC} ${CCFLAGS} ${COMPILE_FLAGS} -c src/ndb_page.c -o make/ndb_page.o
 
 make/ndb_debug.o: src/ndb_debug.cpp ${NDB_DEBUG_H} ${NDB_VM_BUILTIN_H}
 	@mkdir -p $(@D)

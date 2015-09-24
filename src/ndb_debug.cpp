@@ -91,6 +91,8 @@ const char* ndb_debug_statcode2str( ndb_statcode code )
         return "READ-ONLY";
     case NDB_STATCODE_NOTIMPLEMENTED:
         return "NOT IMPLEMENTED";
+    case NDB_STATCODE_NULLPOINTER:
+        return "NULL POINTER";
     }
 }
 

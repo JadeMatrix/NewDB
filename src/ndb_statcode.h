@@ -15,7 +15,8 @@ typedef enum
     NDB_STATCODE_WRONGARGCOUNT,
     NDB_STATCODE_VMPROCPTOOB,
     NDB_STATCODE_READONLY,
-    NDB_STATCODE_NOTIMPLEMENTED
+    NDB_STATCODE_NOTIMPLEMENTED,
+    NDB_STATCODE_NULLPOINTER
 } ndb_statcode;
 
 /******************************************************************************//******************************************************************************/
