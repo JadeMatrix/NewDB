@@ -7,6 +7,8 @@ extern "C" {
 /* Includes *******************************************************************//******************************************************************************/
 
 #include "ndb_statcode.h"
+#include "ndb_util.h"
+#include "ndb_checksum.h"
 
 /* Definitions ****************************************************************//******************************************************************************/
 
@@ -21,8 +23,6 @@ extern "C" {
 
 typedef unsigned long ndb_page_iden;
 
-typedef unsigned char ndb_byte;
-
 typedef unsigned long ndb_rowcount;
 
 /*typedef struct
@@ -33,9 +33,9 @@ typedef unsigned long ndb_rowcount;
 
 typedef struct
 {
-    ndb_page_iden identifier;
-    ndb_rowcount  row_count;
-    unsigned long checksum; /* TODO: Typedef? */
+    ndb_page_iden   identifier;
+    ndb_rowcount    row_count;
+    ndb_checksum_64 checksum;
 } ndb_page_metadata;
 
 typedef union
@@ -58,6 +58,7 @@ ndb_statcode ndb_page_unclaim_write(                ndb_page** );
 /*ndb_statcode ndb_page_open(  ndb_page**, ndb_page_iden );
 ndb_statcode ndb_page_close( ndb_page** );*/
 
+ndb_statcode ndb_page_initialize( ndb_page_iden, ndb_page* );
 ndb_statcode ndb_page_verify( ndb_page* );
 
 ndb_statcode ndb_encode_page_iden( ndb_page_iden, char* );                      /* Takes a string buffer of at least NDB_PAGE_IDEN_CHARLEN */

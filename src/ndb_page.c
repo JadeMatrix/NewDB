@@ -2,9 +2,9 @@
 
 #include "ndb_page.h"
 
-#include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 /* Macros *********************************************************************//******************************************************************************/
 
@@ -80,9 +80,7 @@ ndb_statcode ndb_page_claim_read( ndb_page_iden identifier, ndb_page** page )
     
     if( page_file == NULL )
     {
-        ( *page ) -> structure.metadata.identifier = identifier;
-        
-        /* TODO: Generate checksum */
+        return ndb_page_initialize( identifier, *page );
     }
     else
     {
@@ -124,11 +122,48 @@ ndb_statcode ndb_page_unclaim_write( ndb_page** page )
     return NDB_STATCODE_NOTIMPLEMENTED;
 }
 
+ndb_statcode ndb_page_initialize( ndb_page_iden identifier, ndb_page* page )
+{
+    ndb_statcode check_code;
+    
+    /* TODO: 64-bit */
+    ndb_checksum_32 small_checksum;
+    
+    memset( page, 0x00, NDB_PAGE_SIZE );
+    page -> structure.metadata.identifier = identifier;
+    
+    check_code = ndb_checksum_Adler32( page -> raw_data,
+                                       NDB_PAGE_SIZE,
+                                       &small_checksum );
+    
+    if( check_code != NDB_STATCODE_OK )
+        return check_code;
+    
+    page -> structure.metadata.checksum = small_checksum;
+    
+    return NDB_STATCODE_OK;
+}
 ndb_statcode ndb_page_verify( ndb_page* page )
 {
+    ndb_statcode check_code;
     
+    /* TODO: 64-bit */
+    ndb_checksum_32 fresh;
+    ndb_checksum_64 stale = page -> structure.metadata.checksum;
     
-    return NDB_STATCODE_NOTIMPLEMENTED;
+    page -> structure.metadata.checksum = 0x00;
+    
+    check_code = ndb_checksum_Adler32( page -> raw_data,
+                                       NDB_PAGE_SIZE,
+                                       &fresh );
+    
+    if( check_code != NDB_STATCODE_OK )
+        return check_code;
+    
+    if( fresh != stale )
+        return NDB_STATCODE_CHECKSUMFAIL;
+    else
+        return NDB_STATCODE_OK;
 }
 
 ndb_statcode ndb_encode_page_iden( ndb_page_iden identifier,
