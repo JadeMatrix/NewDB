@@ -93,6 +93,12 @@ const char* ndb_debug_statcode2str( ndb_statcode code )
         return "NOT IMPLEMENTED";
     case NDB_STATCODE_NULLPOINTER:
         return "NULL POINTER";
+    case NDB_STATCODE_IOERROR:
+        return "I/O ERROR";
+    case NDB_STATCODE_MEMERROR:
+        return "MEMORY ERROR";
+    case NDB_STATCODE_CHECKSUMFAIL:
+        return "CHECKSUM FAILURE";
     }
 }
 

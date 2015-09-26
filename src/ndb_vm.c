@@ -116,6 +116,8 @@ ndb_statcode ndb_execute( ndb_connection* connection, ndb_query* query )        
     return query_statcode;
     #endif
     
+    /* TODO: Free pages in registers */
+    
     return NDB_STATCODE_OK;
 }
 

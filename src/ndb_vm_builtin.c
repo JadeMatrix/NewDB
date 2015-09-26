@@ -827,6 +827,7 @@ ndb_statcode ndb_vm_rud( ndb_vm_state* state )
 }
 ndb_statcode ndb_vm_rup( ndb_vm_state* state )
 {
+    /* Remember to set $prN to NULL */
     /* IMPLEMENT: */
     return NDB_STATCODE_NOTIMPLEMENTED;
 }

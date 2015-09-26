@@ -2,21 +2,108 @@
 
 #include "ndb_page.h"
 
+#include <stddef.h>
+#include <stdlib.h>
+#include <stdio.h>
+
 /* Macros *********************************************************************//******************************************************************************/
 
-
+/* TODO: Make this more dynamic */
+#define _NDB_MAX_PAGES_PER  128
+#define _NDB_MAX_LIST_PAGES 128
 
 /* Static Globals *************************************************************//******************************************************************************/
 
+#if 0
+typedef struct
+{
+    /*ndb_page_iden identifier;*/
+    ndb_page*     page;
+    unsigned long flags;
+} _ndb_page_record;
 
+static _ndb_page_record** page_records = NULL;
+#endif
 
 /* Implementations ************************************************************//******************************************************************************/
 
 ndb_statcode ndb_page_claim_read( ndb_page_iden identifier, ndb_page** page )
 {
+    #if 0
+    int record_i;
+    int list_i;
     
+    if( page_records == NULL )
+        page_records = calloc( _NDB_MAX_LIST_PAGES,
+                               sizeof( _ndb_page_record* ) );
     
-    return NDB_STATCODE_NOTIMPLEMENTED;
+    for( record_i = 0; record_i < _NDB_MAX_LIST_PAGES; ++record_i )
+        if( page_records[ record_i ] != NULL )
+        {
+            _ndb_page_record* list = page_records[ record_i ];
+            
+            for( list_i = 0; list_i < _NDB_MAX_PAGES_PER; ++list_i )
+                if( list[ list_i ].page != NULL )
+                {
+                    
+                }
+                else
+                {
+                    
+                }
+        }
+        else
+        {
+            page_records[ record_i ] = calloc( _NDB_MAX_PAGES_PER,
+                                               sizeof( _ndb_page_record ) );
+            --record_i;
+        }
+    #endif
+    
+    FILE* page_file;
+    char  page_file_path[ sizeof( "data/" ) + NDB_PAGE_IDEN_CHARLEN ];
+    size_t read_bytes;
+    
+    page_file_path[ 0 ] = 'd';
+    page_file_path[ 1 ] = 'a';
+    page_file_path[ 2 ] = 't';
+    page_file_path[ 3 ] = 'a';
+    page_file_path[ 4 ] = '/';
+    page_file_path[ sizeof( page_file_path ) - 1 ] = '\0';
+    
+    ( *page ) = valloc( NDB_PAGE_SIZE );
+    if( *page == NULL )
+        return NDB_STATCODE_MEMERROR;
+    
+    ndb_encode_page_iden( identifier, page_file_path + sizeof( "data/" ) - 1 );
+    page_file = fopen( page_file_path, "rb" );
+    
+    if( page_file == NULL )
+    {
+        ( *page ) -> structure.metadata.identifier = identifier;
+        
+        /* TODO: Generate checksum */
+    }
+    else
+    {
+        ndb_statcode page_valid;
+        
+        read_bytes = fread( ( *page ) -> raw_data, 1, NDB_PAGE_SIZE, page_file );
+        
+        if( read_bytes != NDB_PAGE_SIZE
+            || ferror( page_file ) )
+        {
+            free( *page );
+            return NDB_STATCODE_IOERROR;
+        }
+        
+        if( ( page_valid = ndb_page_verify( *page ) ) != NDB_STATCODE_OK )
+        {
+            return page_valid;
+        }
+    }
+    
+    return NDB_STATCODE_OK;
 }
 ndb_statcode ndb_page_claim_write( ndb_page_iden identifier, ndb_page** page )
 {
@@ -31,6 +118,13 @@ ndb_statcode ndb_page_unclaim_read( ndb_page** page )
     return NDB_STATCODE_NOTIMPLEMENTED;
 }
 ndb_statcode ndb_page_unclaim_write( ndb_page** page )
+{
+    
+    
+    return NDB_STATCODE_NOTIMPLEMENTED;
+}
+
+ndb_statcode ndb_page_verify( ndb_page* page )
 {
     
     

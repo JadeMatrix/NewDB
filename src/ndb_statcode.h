@@ -16,7 +16,10 @@ typedef enum
     NDB_STATCODE_VMPROCPTOOB,
     NDB_STATCODE_READONLY,
     NDB_STATCODE_NOTIMPLEMENTED,
-    NDB_STATCODE_NULLPOINTER
+    NDB_STATCODE_NULLPOINTER,
+    NDB_STATCODE_IOERROR,
+    NDB_STATCODE_MEMERROR,
+    NDB_STATCODE_CHECKSUMFAIL
 } ndb_statcode;
 
 /******************************************************************************//******************************************************************************/
