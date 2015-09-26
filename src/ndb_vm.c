@@ -147,6 +147,21 @@ int main( int argc, char* argv[] )
         printf( "Read claimed page iden 0x%016lX checksum 0x%016lX\n",
                 pp -> structure.metadata.identifier,
                 pp -> structure.metadata.checksum );
+        
+        {
+            int i;
+            printf( "\nPage contents:\n" );
+            for( i = 0; i < NDB_PAGE_SIZE; ++i )
+            {
+                printf( "%02X", pp -> raw_data[ i ] );
+                if( ( i + 1) % 32 == 0 )
+                    printf( "\n" );
+                else
+                    if( ( i + 1) % 8 == 0 )
+                        printf( " " );
+            }
+            printf( "\n\n" );
+        }
     }
     printf( "Exited with code %s\n", ndb_debug_statcode2str( page_statcode ) );
     return page_statcode;

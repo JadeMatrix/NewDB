@@ -16,8 +16,7 @@ extern "C" {
 #define NDB_PAGE_IDEN_CHARLEN       ( ( sizeof( ndb_page_iden ) * 8 ) / ( NDB_PAGE_IDEN_ENCODEBASE >> 2 ) )
 
 #define NDB_PAGE_SIZE_EXP   15
-/*#define NDB_PAGE_SIZE       ( ( 2 << NDB_PAGE_SIZE_EXP ) - sizeof( ndb_page_iden ) )*/
-#define NDB_PAGE_SIZE       ( 2 << NDB_PAGE_SIZE_EXP )
+#define NDB_PAGE_SIZE       ( 1 << NDB_PAGE_SIZE_EXP )
 
 /* General Types **************************************************************//******************************************************************************/
 

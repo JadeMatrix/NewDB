@@ -158,12 +158,21 @@ ndb_statcode ndb_page_verify( ndb_page* page )
                                        &fresh );
     
     if( check_code != NDB_STATCODE_OK )
+    {
+        page -> structure.metadata.checksum = stale;
         return check_code;
-    
-    if( fresh != stale )
-        return NDB_STATCODE_CHECKSUMFAIL;
+    }
     else
-        return NDB_STATCODE_OK;
+        if( fresh != stale )
+        {
+            page -> structure.metadata.checksum = stale;
+            return NDB_STATCODE_CHECKSUMFAIL;
+        }
+        else
+        {
+            page -> structure.metadata.checksum = stale;
+            return NDB_STATCODE_OK;
+        }
 }
 
 ndb_statcode ndb_encode_page_iden( ndb_page_iden identifier,
