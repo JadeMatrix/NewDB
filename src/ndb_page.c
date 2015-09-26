@@ -48,6 +48,9 @@ ndb_statcode ndb_encode_page_iden( ndb_page_iden identifier,
     switch( NDB_PAGE_IDEN_ENCODEBASE )                                          /* Assuming this'll be optimized out by the compiler */
     {
     case 16:
+        #if NDB_PAGE_IDEN_ENCODEBASE != 16
+        #error ndb_encode_page_iden() not implemented for NDB_PAGE_IDEN_ENCODEBASE != 16
+        #endif
         for( i = 0; i < NDB_PAGE_IDEN_CHARLEN; ++i )
         {
             unsigned int quartet = ( sizeof( identifier ) * 8 ) - ( ( i + 1 ) * 4 );
