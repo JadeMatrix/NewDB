@@ -139,6 +139,18 @@ int main( int argc, char* argv[] )
     ndb_vm_argtype test_argtypes[ 5 ][ 3 ];
     ndb_vm_argval  test_argvals[ 5 ][ 3 ];
     
+    ndb_statcode page_statcode;
+    ndb_page* pp;
+    page_statcode = ndb_page_claim_read( 0xFEDCBA9876543210, &pp );
+    if( page_statcode == NDB_STATCODE_OK )
+    {
+        printf( "Read claimed page iden 0x%016lX checksum 0x%016lX\n",
+                pp -> structure.metadata.identifier,
+                pp -> structure.metadata.checksum );
+    }
+    printf( "Exited with code %s\n", ndb_debug_statcode2str( page_statcode ) );
+    return page_statcode;
+    
     instruction_count = 5;
     query_program_state.ir = ( ndb_vmf_integer* )alloca( sizeof( ndb_vmf_integer ) );
     
