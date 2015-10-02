@@ -26,6 +26,7 @@ NDB_VM_H = src/ndb_vm.h ${NDB_PAGE_H} ${NDB_CONNECTION_H} ${NDB_QUERY_H} ${NDB_S
 NDB_VM_BUILTIN_H = src/ndb_vm_builtin.h ${NDB_VM_H}
 NDB_CHECKSUM_H = src/ndb_checksum.h ${NDB_UTIL_H}
 NDB_UTIL_H = src/ndb_util.h
+NDB_TYPES_H = src/ndb_types.h
 
 # Recipes for executables ######################################################
 
@@ -53,6 +54,15 @@ make/ndb_checksum.o: src/ndb_checksum.c ${NDB_CHECKSUM_H}
 make/ndb_debug.o: src/ndb_debug.cpp ${NDB_DEBUG_H} ${NDB_VM_BUILTIN_H}
 	@mkdir -p $(@D)
 	${CPPC} ${CPPCFLAGS} ${COMPILE_FLAGS} -c src/ndb_debug.cpp -o make/ndb_debug.o
+
+# Other recipes ################################################################
+
+src/ndb_types.h: make/ndb_make_types_h
+	@./make/ndb_make_types_h > src/ndb_types.h
+
+make/ndb_make_types_h: src/ndb_make_types_h.c
+	@mkdir -p $(@D)
+	@${CC} ${CCFLAGS} ${COMPILE_FLAGS} ${LINK_FLAGS} src/ndb_make_types_h.c -o make/ndb_make_types_h
 
 # Phony recipes ################################################################
 
