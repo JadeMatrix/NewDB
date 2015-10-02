@@ -1,3 +1,8 @@
+/* There is nothing that can be done in C99 than cannot be done more cleverly
+ * (ie more verbosely) in C89.
+ *                                  - Me, right now.
+ */
+
 /* Includes *******************************************************************//******************************************************************************/
 
 #include <stdio.h>
@@ -5,8 +10,8 @@
 /* Static Globals *************************************************************//******************************************************************************/
 
 static char* header_upper =
-"#ifndef NDB_TYPES_H\n"
-"#define NDB_TYPES_H\n"
+"#ifndef NDB_FIXEDWIDTH_H\n"
+"#define NDB_FIXEDWIDTH_H\n"
 "#ifdef __cplusplus\n"
 "extern \"C\" {\n"
 "#endif\n"
