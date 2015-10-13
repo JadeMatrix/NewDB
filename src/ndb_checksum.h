@@ -8,11 +8,12 @@ extern "C" {
 
 #include "ndb_statcode.h"
 #include "ndb_util.h"
+#include "ndb_fixedwidth.h"
 
 /* General Types **************************************************************//******************************************************************************/
 
-typedef unsigned int  ndb_checksum_32;
-typedef unsigned long ndb_checksum_64;
+typedef ndb_int32 ndb_checksum_32;
+typedef ndb_int64 ndb_checksum_64;
 
 /* Function Prototypes ********************************************************//******************************************************************************/
 

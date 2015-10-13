@@ -24,7 +24,7 @@ NDB_QUERY_H = src/ndb_query.h
 NDB_STATCODE_H = src/ndb_statcode.h
 NDB_VM_H = src/ndb_vm.h ${NDB_PAGE_H} ${NDB_CONNECTION_H} ${NDB_QUERY_H} ${NDB_STATCODE_H}
 NDB_VM_BUILTIN_H = src/ndb_vm_builtin.h ${NDB_VM_H}
-NDB_CHECKSUM_H = src/ndb_checksum.h ${NDB_UTIL_H}
+NDB_CHECKSUM_H = src/ndb_checksum.h ${NDB_UTIL_H} ${NDB_FIXEDWIDTH_H}
 NDB_UTIL_H = src/ndb_util.h
 NDB_FIXEDWIDTH_H = src/ndb_fixedwidth.h
 

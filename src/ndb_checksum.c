@@ -32,8 +32,8 @@ ndb_statcode ndb_checksum_Adler32( ndb_byte* source,
                                    unsigned long length,
                                    ndb_checksum_32* target )
 {
-    unsigned int adler_a = 1;
-    unsigned int adler_b = 0;
+    ndb_int16 adler_a = 1;
+    ndb_int16 adler_b = 0;
     
     unsigned long i;
     
